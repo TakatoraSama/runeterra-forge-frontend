@@ -526,6 +526,82 @@ const CARDS = {
 		"BalanceValues": {"cost_reduction": 3},
 		"PreviewTooltip": ["Nautilus1", "Nautilus2"]
 	},
+
+	# Champions - Janna line
+	"Janna1": {
+		"Name": "Janna",
+		"Region": ["Piltover Zaun"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": true,
+		"Sprite": "res://Assets/CardSprites/Janna1.webp",
+		"Level": 1,
+		"Cost": 1,
+		"Power": 2,
+		"Keyword": [],
+		"Skill": "{Play}: {Updraft} {updraft_threshold} to draw that much at the next {Round Start}.",
+		"LevelUp": "You've drawn {draw_threshold}+ cards.",
+		"LevelUpTo": "Janna2",
+		"AbilityType": "",
+		"BalanceValues": {"updraft_threshold": 2, "draw_threshold": 12},
+		"PreviewTooltip": ["Janna1", "Janna2"]
+	},
+	"Janna2": {
+		"Name": "Janna",
+		"Region": ["Piltover Zaun"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": false,
+		"Sprite": "res://Assets/CardSprites/Janna2.webp",
+		"Level": 2,
+		"Cost": 1,
+		"Power": 3,
+		"Keyword": ["Elusive"],
+		"Skill": "{Play}: {Updraft} {updraft_threshold} to draw that much at the next {Round Start}. [br] When I level up, grant me +1 Power for each card you've drawn this game.",
+		"LevelUp": "",
+		"LevelUpTo": null,
+		"AbilityType": "",
+		"BalanceValues": {"updraft_threshold": 2},
+		"PreviewTooltip": ["Janna1", "Janna2"]
+	},
+
+	# Champion - Karma line
+	"Karma1": {
+		"Name": "Karma",
+		"Region": ["Ionia"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": true,
+		"Sprite": "res://Assets/CardSprites/Karma1.webp",
+		"Level": 1,
+		"Cost": 5,
+		"Power": 5,
+		"Keyword": [],
+		"Skill": "",
+		"LevelUp": "You're {Enlightened}.",
+		"LevelUpTo": "Karma2",
+		"AbilityType": "",
+		"BalanceValues": {},
+		"PreviewTooltip": ["Karma1", "Karma2"]
+	},
+	"Karma2": {
+		"Name": "Karma",
+		"Region": ["Ionia"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": false,
+		"Sprite": "res://Assets/CardSprites/Karma2.webp",
+		"Level": 2,
+		"Cost": 5,
+		"Power": 6,
+		"Keyword": [],
+		"Skill": "{Aura}: Allied {play} effect happens twice.",
+		"LevelUp": "",
+		"LevelUpTo": null,
+		"AbilityType": "",
+		"BalanceValues": {},
+		"PreviewTooltip": ["Karma1", "Karma2"]
+	},
 	
 	# Landmarks
 	"BuriedSunDisc": {

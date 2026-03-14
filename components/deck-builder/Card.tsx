@@ -49,6 +49,7 @@ const regionSpriteMap: Record<string, string> = {
   'Noxus':         'Noxus',
   'Freljord':      'Freljord',
   'Piltover':      'PiltoverZaun',
+  'Piltover Zaun': 'PiltoverZaun',
   'Bilgewater':    'Bilgewater',
   'Ionia':         'Ionia',
   'Shadow Isles':  'ShadowIsles',
