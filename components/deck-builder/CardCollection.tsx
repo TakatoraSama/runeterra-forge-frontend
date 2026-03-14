@@ -8,9 +8,10 @@ interface CardCollectionProps {
   deckCards: string[];
   cardWidth: number;
   onToggleCard: (id: string) => void;
+  onRightClick?: (card: CollectibleCard) => void;
 }
 
-export default function CardCollection({ cards, deckCards, cardWidth, onToggleCard }: CardCollectionProps) {
+export default function CardCollection({ cards, deckCards, cardWidth, onToggleCard, onRightClick }: CardCollectionProps) {
   return (
     <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 min-h-0">
       {cards.length === 0 ? (
@@ -28,6 +29,7 @@ export default function CardCollection({ cards, deckCards, cardWidth, onToggleCa
               card={card}
               isInDeck={deckCards.includes(card.id)}
               onClick={() => onToggleCard(card.id)}
+              onRightClick={onRightClick ? () => onRightClick(card) : undefined}
               variant="collection"
             />
           ))}

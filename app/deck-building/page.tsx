@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { getCollectibleCards } from '@/lib/CardDatabase';
+import { getCollectibleCards, getRelatedCards, CollectibleCard } from '@/lib/CardDatabase';
 import DeckManager from '@/components/deck-builder/DeckManager';
 import FilterBar from '@/components/deck-builder/FilterBar';
 import CardCollection from '@/components/deck-builder/CardCollection';
+import CardDetailOverlay from '@/components/deck-builder/CardDetailOverlay';
 
 const ALL_CARDS = getCollectibleCards();
 
@@ -27,6 +28,7 @@ export default function DeckBuildingPage() {
   const [filterCost, setFilterCost] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [cardWidth, setCardWidth] = useState(100);
+  const [previewCard, setPreviewCard] = useState<CollectibleCard | null>(null);
   const filteredCards = useMemo(() => {
     const filtered = ALL_CARDS.filter(card => {
       const matchRegion = filterRegion.length === 0 || filterRegion.some(r => card.Region.includes(r));
@@ -63,6 +65,13 @@ export default function DeckBuildingPage() {
 
   return (
     <div className="h-dvh flex overflow-hidden bg-bg-void text-text-primary font-body">
+      {previewCard && (
+        <CardDetailOverlay
+          card={previewCard}
+          relatedCards={getRelatedCards(previewCard.id)}
+          onClose={() => setPreviewCard(null)}
+        />
+      )}
       {/* Centered wrapper for both panels */}
       <div className="flex mx-auto">
         {/* Left panel — Deck Manager (fixed width) */}
@@ -80,6 +89,7 @@ export default function DeckBuildingPage() {
             onCancel={handleCancel}
             onSave={handleSave}
             onCardWidthChange={setCardWidth}
+            onRightClick={setPreviewCard}
           />
         </div>
 
@@ -101,6 +111,7 @@ export default function DeckBuildingPage() {
             deckCards={deckCards}
             cardWidth={cardWidth}
             onToggleCard={handleToggleCard}
+            onRightClick={setPreviewCard}
           />
         </div>
       </div>

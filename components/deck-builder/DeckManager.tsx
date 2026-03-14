@@ -14,6 +14,7 @@ interface DeckManagerProps {
   onCancel: () => void;
   onSave: () => void;
   onCardWidthChange: (w: number) => void;
+  onRightClick?: (card: CollectibleCard) => void;
 }
 
 export default function DeckManager({
@@ -26,6 +27,7 @@ export default function DeckManager({
   onCancel,
   onSave,
   onCardWidthChange,
+  onRightClick,
 }: DeckManagerProps) {
   const gridContainerRef = useRef<HTMLDivElement>(null);
 
@@ -109,6 +111,7 @@ export default function DeckManager({
                 card={card}
                 isInDeck={false}
                 onClick={() => onToggleCard(card.id)}
+                onRightClick={onRightClick ? () => onRightClick(card) : undefined}
                 variant="deck"
               />
             ))}

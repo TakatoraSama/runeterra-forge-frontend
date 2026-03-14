@@ -1,7 +1,5 @@
-class_name CardDatabase
+{
 
-const CARDS = {
-	# Champions - Azir Line
 	"Azir1": {
 		"Name": "Azir",
 		"Region": ["Shurima"],
@@ -57,7 +55,7 @@ const CARDS = {
 		"PreviewTooltip": ["Azir1", "Azir2", "Azir3", "BuriedSunDisc", "RestoredSunDisc"]
 	},
 	
-	# Champions - Renekton Line
+
 	"Renekton1": {
 		"Name": "Renekton",
 		"Region": ["Shurima"],
@@ -113,7 +111,7 @@ const CARDS = {
 		"PreviewTooltip": ["Renekton1", "Renekton2", "Renekton3", "BuriedSunDisc", "RestoredSunDisc"]
 	},
 	
-	# Champions - Nasus Line
+
 	"Nasus1": {
 		"Name": "Nasus",
 		"Region": ["Shurima"],
@@ -169,7 +167,7 @@ const CARDS = {
 		"PreviewTooltip": ["Nasus1", "Nasus2", "Nasus3", "BuriedSunDisc", "RestoredSunDisc"]
 	},
 	
-	# Champions - Xerath Line
+
 	"Xerath1": {
 		"Name": "Xerath",
 		"Region": ["Shurima"],
@@ -225,7 +223,7 @@ const CARDS = {
 		"PreviewTooltip": ["Xerath1", "Xerath2", "Xerath3", "BuriedSunDisc", "RestoredSunDisc"]
 	},
 	
-	# Champions - Tryndamere Line
+
 	"Tryndamere1": {
 		"Name": "Tryndamere",
 		"Region": ["Freljord"],
@@ -262,7 +260,7 @@ const CARDS = {
 		"PreviewTooltip": ["Tryndamere1", "Tryndamere2"]
 	},
 	
-	# Champions - Trundle Line
+
 	"Trundle1": {
 		"Name": "Trundle",
 		"Region": ["Freljord"],
@@ -273,7 +271,7 @@ const CARDS = {
 		"Level": 1,
 		"Cost": 3,
 		"Power": 3,
-		"Keyword": ["Regeneration"],
+		"Keyword": [],
 		"Skill": "{Play}: Create an [Ice Pillar] in hand.",
 		"LevelUp": "You've played an [Ice Pillar].",
 		"LevelUpTo": "Trundle2",
@@ -299,7 +297,7 @@ const CARDS = {
 		"PreviewTooltip": ["Trundle1", "Trundle2", "IcePillar"]
 	},
 
-	# Champions - Ahri line
+
 	"Ahri1": {
 		"Name": "Ahri",
 		"Region": ["Ionia"],
@@ -311,8 +309,8 @@ const CARDS = {
 		"Cost": 1,
 		"Power": 2,
 		"Keyword": ["Elusive"],
-		"Skill": "Each round, when I {swap} lane, {recall} the weakest ally here.",
-		"LevelUp": "I've {recalled} {recall_threshold}+ allies.",
+		"Skill": "Each round, when I {swap lane}, {recall} the weakest ally here.",
+		"LevelUp": "I've recalled {recall_threshold}+ allies.",
 		"LevelUpTo": "Ahri2",
 		"AbilityType": "swap_arrive_recall",
 		"BalanceValues": {"recall_threshold": 3},
@@ -329,7 +327,7 @@ const CARDS = {
 		"Cost": 1,
 		"Power": 3,
 		"Keyword": ["Elusive"],
-		"Skill": "Each round, when I {swap} lane, {recall} the weakest ally here and reduce its cost by {recall_cost_reduction}.",
+		"Skill": "Each round, when I {swap lane}, {recall} the weakest ally here and reduce its cost by {recall_cost_reduction}.",
 		"LevelUp": "",
 		"LevelUpTo": null,
 		"AbilityType": "swap_arrive_recall",
@@ -337,7 +335,7 @@ const CARDS = {
 		"PreviewTooltip": ["Ahri1", "Ahri2"]
 	},
 
-	# Champions - Kennen line
+
 	"Kennen1": {
 		"Name": "Kennen",
 		"Region": ["Bandle City", "Ionia"],
@@ -349,7 +347,7 @@ const CARDS = {
 		"Cost": 1,
 		"Power": 1,
 		"Keyword": [],
-		"Skill": "{Play}: :Stun: {Stun} an enemy here.",
+		"Skill": "{Play}: {Stun} an enemy here.",
 		"LevelUp": "You've sumomoned the same ally {summon_threshold}+ times.",
 		"LevelUpTo": "Kennen2",
 		"AbilityType": "stun_enemy",
@@ -367,7 +365,7 @@ const CARDS = {
 		"Cost": 1,
 		"Power": 2,
 		"Keyword": [],
-		"Skill": "{Play}: :Stun: {Stun} an enemy here and grant it -{power_decrease} Power.",
+		"Skill": "{Play}: {Stun} an enemy here and grant it -{power_decrease} Power.",
 		"LevelUp": "",
 		"LevelUpTo": "",
 		"AbilityType": "stun_enemy",
@@ -375,7 +373,7 @@ const CARDS = {
 		"PreviewTooltip": ["Kennen1", "Kennen2"]
 	},
 
-	# Champions - Irelia line
+
 	"Irelia1": {
 		"Name": "Irelia",
 		"Region": ["Ionia"],
@@ -387,7 +385,7 @@ const CARDS = {
 		"Cost": 3,
 		"Power": 1,
 		"Keyword": ["Elusive"],
-		"Skill": "When I {swap} lane, summon a [Blade] at the original lane.",
+		"Skill": "When I {swap lane}, summon a [Blade] at the original lane.",
 		"LevelUp": "You've summoned {ally_threshold}+ allies.",
 		"LevelUpTo": "Irelia2",
 		"AbilityType": "swap_arrive_summon_blade",
@@ -405,7 +403,7 @@ const CARDS = {
 		"Cost": 3,
 		"Power": 2,
 		"Keyword": ["Elusive"],
-		"Skill": "When I {swap} lane, summon a [Blade] at the original lane. [br] {Aura}: 1 cost allies have +{power_increase} Power.",
+		"Skill": "When I {swap lane}, summon a [Blade] at the original lane. [br] {Aura}: 1 cost allies have +{power_increase} Power.",
 		"LevelUp": "",
 		"LevelUpTo": "",
 		"AbilityType": "swap_arrive_summon_blade",
@@ -413,7 +411,7 @@ const CARDS = {
 		"PreviewTooltip": ["Irelia1", "Irelia2", "Blade"]
 	},
 
-	# Champions - Rumble
+
 	"Rumble1": {
 		"Name": "Rumble",
 		"Region": ["Bandle City", "Noxus"],
@@ -423,9 +421,9 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/Rumble1.webp",
 		"Level": 1,
 		"Cost": 3,
-		"Power": 3,
+		"Power": 5,
 		"Keyword": [],
-		"Skill": "{Play}: Discard a 1-2, 3-4, and 5+ cost card to grant me +2 Power for each card discarded.",
+		"Skill": "{Play}: Discard a 1-2, 3-4, and 5+ cost card.",
 		"LevelUp": "You've discarded {discard_threshold}+ times.",
 		"LevelUpTo": "Rumble2",
 		"AbilityType": "",
@@ -441,7 +439,7 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/Rumble2.webp",
 		"Level": 2,
 		"Cost": 3,
-		"Power": 4,
+		"Power": 6,
 		"Keyword": [],
 		"Skill": "When I level up, for each of your discarded cards, create a random card with a cost equal to the discarded card's cost and reduce its cost by 1.",
 		"LevelUp": "",
@@ -451,7 +449,7 @@ const CARDS = {
 		"PreviewTooltip": ["Rumble1", "Rumble2"]
 	},
 
-	# Champions - Sion line
+
 	"Sion1": {
 		"Name": "Sion",
 		"Region": ["Noxus"],
@@ -463,7 +461,7 @@ const CARDS = {
 		"Cost": 6,
 		"Power": 8,
 		"Keyword": [],
-		"Skill": "When I'm discarded, grant another ally in hand +2 Power and return me to your hand.",
+		"Skill": "When I'm discarded, grant another ally in hand +2 Power.",
 		"LevelUp": "You've discarded or summoned {power_threshold}+ Power.",
 		"LevelUpTo": "Sion2",
 		"AbilityType": "",
@@ -489,7 +487,7 @@ const CARDS = {
 		"PreviewTooltip": ["Sion1", "Sion2"]
 	},
 
-	# Champions - Nautilus line
+
 	"Nautilus1": {
 		"Name": "Nautilus",
 		"Region": ["Bilgewater"],
@@ -502,7 +500,7 @@ const CARDS = {
 		"Power": 0,
 		"Keyword": ["Fearsome", "Tough"],
 		"Skill": "",
-		"LevelUp": "When you are :Deep:{Deep}. When I level up, create 3 random {created_cost}+ cost sea monsters in your hand.",
+		"LevelUp": "When you are {Deep}. When I level up, create a {created_cost}+ cost sea monster in your hand.",
 		"LevelUpTo": "Nautilus2",
 		"AbilityType": "",
 		"BalanceValues": {"created_cost": 3},
@@ -518,16 +516,16 @@ const CARDS = {
 		"Level": 2,
 		"Cost": 5,
 		"Power": 13,
-		"Keyword": ["Fearsome", "Tough"],
-		"Skill": "{Aura}: Sea Monsters allies cost {cost_reduction} less.",
-		"LevelUp": "",
+		"Keyword": ["Tough", "Fearsome"],
+		"Skill": "",
+		"LevelUp": "{Aura}: Sea Monsters allies cost {cost_reduction} less.",
 		"LevelUpTo": "",
 		"AbilityType": "",
 		"BalanceValues": {"cost_reduction": 3},
 		"PreviewTooltip": ["Nautilus1", "Nautilus2"]
 	},
 	
-	# Landmarks
+
 	"BuriedSunDisc": {
 		"Name": "Buried Sun Disc",
 		"Region": ["Shurima"],
@@ -559,7 +557,7 @@ const CARDS = {
 		"PreviewTooltip": ["BuriedSunDisc", "RestoredSunDisc"]
 	},
 	
-	# Followers
+
 	"IcePillar": {
 		"Name": "Ice Pillar",
 		"Region": ["Freljord"],
@@ -569,7 +567,7 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/IcePillar.webp",
 		"Cost": 5,
 		"Power": 5,
-		"Keyword": [],
+		"Keyword": ["Regeneration"],
 		"Skill": "{Play}: Next turn, you get +{mana_bonus} mana.",
 		"AbilityType": "mana_ramp",
 		"BalanceValues": {"mana_bonus": 5},
@@ -644,7 +642,7 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/DummySprite.webp",
 		"Cost": 2,
 		"Power": 2,
-		"Keyword": ["Deep"],
+		"Keyword": [],
 		"Skill": "",
 		"AbilityType": "",
 		"BalanceValues": {},
@@ -659,7 +657,7 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/DummySprite.webp",
 		"Cost": 3,
 		"Power": 3,
-		"Keyword": ["Deep"],
+		"Keyword": [],
 		"Skill": "",
 		"AbilityType": "",
 		"BalanceValues": {},
@@ -674,7 +672,7 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/DummySprite.webp",
 		"Cost": 4,
 		"Power": 4,
-		"Keyword": ["Deep"],
+		"Keyword": [],
 		"Skill": "",
 		"AbilityType": "",
 		"BalanceValues": {},
@@ -689,7 +687,7 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/DummySprite.webp",
 		"Cost": 5,
 		"Power": 5,
-		"Keyword": ["Deep"],
+		"Keyword": [],
 		"Skill": "",
 		"AbilityType": "",
 		"BalanceValues": {},
@@ -704,7 +702,7 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/DummySprite.webp",
 		"Cost": 6,
 		"Power": 6,
-		"Keyword": ["Deep"],
+		"Keyword": [],
 		"Skill": "",
 		"AbilityType": "",
 		"BalanceValues": {},
@@ -719,213 +717,10 @@ const CARDS = {
 		"Sprite": "res://Assets/CardSprites/DummySprite.webp",
 		"Cost": 7,
 		"Power": 7,
-		"Keyword": ["Deep"],
+		"Keyword": [],
 		"Skill": "",
 		"AbilityType": "",
 		"BalanceValues": {},
 		"PreviewTooltip": ["TerrorOfTheTides"]
-	},
-}
-
-
-static func populate_card_visuals(card: Node, card_data: Dictionary, source_card: Node = null) -> void:
-	"""Populate all visual text and sprite nodes on a card from card_data.
-	Single source of truth for card display — replaces duplicated setup blocks
-	that previously appeared in Deck.gd, CardManager.gd, and Card.gd."""
-	var name_label = card.get_node_or_null("CardFront/TextContainer/CardName")
-	if name_label:
-		name_label.text = str(card_data.get("Name", ""))
-
-	var cost_label = card.get_node_or_null("CardFront/Cost")
-	if cost_label:
-		cost_label.text = str(card_data.get("Cost", 0))
-
-	apply_power_visual(card, card_data, source_card)
-
-	var skill_label = card.get_node_or_null("CardFront/TextContainer/Skill")
-	var skill_text: String = str(card_data.get("Skill", ""))
-	if skill_label && skill_text != "":
-		skill_label.visible = true
-		skill_label.text = format_card_text(skill_text, card_data.get("BalanceValues", {}))
-	else:
-		skill_label.visible = false
-
-	var level_up_raw = card_data.get("LevelUp", null)
-	var level_up_text: String = str(level_up_raw) if level_up_raw != null else ""
-	var has_level_up := level_up_raw != null and level_up_text != ""
-	var lv_label = card.get_node_or_null("CardFront/TextContainer/LevelUp")
-	var lv_sep = card.get_node_or_null("CardFront/TextContainer/LevelSeperator")
-	if lv_label:
-		lv_label.text = format_card_text(level_up_text, card_data.get("BalanceValues", {})) if has_level_up else ""
-		lv_label.visible = has_level_up
-	if lv_sep:
-		lv_sep.visible = has_level_up
-
-	var sprite_path: String = str(card_data.get("Sprite", ""))
-	if sprite_path != "":
-		var sprite_node = card.get_node_or_null("CardFront/CardSpriteParent/CardSprite")
-		if sprite_node:
-			sprite_node.texture = ResourceLoader.load(sprite_path)
-
-	var sub_type: String = str(card_data.get("SubType", ""))
-	var has_sub_type := sub_type != ""
-	var sub_label = card.get_node_or_null("CardFront/SubType")
-	var sub_bg = card.get_node_or_null("CardFront/CardSubType")
-	if sub_label:
-		if has_sub_type:
-			sub_label.text = sub_type.to_upper()
-		sub_label.visible = has_sub_type
-	if sub_bg:
-		sub_bg.visible = has_sub_type
-
-	var region: Array = card_data.get("Region", [])
-	var region_sprite_node_1 = card.get_node_or_null("CardFront/TextContainer/RegionContainer/Region1")
-	var region_sprite_node_2 = card.get_node_or_null("CardFront/TextContainer/RegionContainer/Region2")
-	
-	region_sprite_node_1.texture = ResourceLoader.load("res://Assets/RegionSprites/" + (region[0].replace(" ", "")) + ".webp")
-	if region.size() > 1 and region_sprite_node_2:
-		region_sprite_node_2.texture = ResourceLoader.load("res://Assets/RegionSprites/" + (region[1].replace(" ", "")) + ".webp")
-	else:
-		region_sprite_node_2.visible = false
-
-	var keywords: Array = card_data.get("Keyword", [])
-	var keyword_container = card.get_node_or_null("CardFront/TextContainer/KeywordContainer")
-	var keyword_item_scene = preload("res://Scenes/KeywordItem.tscn")
-
-	if keyword_container:
-		for child in keyword_container.get_children():
-			child.queue_free()
-	if keywords.size() > 0:
-		keyword_container.visible = true
-		for keyword in keywords:
-			var item = keyword_item_scene.instantiate()
-			var keyword_sprite_path = "res://Assets/KeywordSprites/" + str(keyword) + ".webp"
-			item.get_node("KeywordSprite").texture = ResourceLoader.load(keyword_sprite_path)
-			keyword_container.add_child(item)
-	else:
-		keyword_container.visible = false
-
-
-static func format_card_text(text: String, balance_values: Dictionary = {}) -> String:
-	"""Replace {..} with gold (substituting balance_values if key matches) and [..] with blue,
-	while preserving real BBCode tags (e.g. [br])."""
-	var result := ""
-	var i := 0
-
-	while i < text.length():
-		var c := text[i]
-
-		if c == "[":
-			var close_idx := text.find("]", i + 1)
-			if close_idx != -1:
-				var content := text.substr(i + 1, close_idx - i - 1)
-				if _is_bbcode_tag(content):
-					result += text.substr(i, close_idx - i + 1)
-				else:
-					result += "[color=#54a5ff]" + content + "[/color]"
-				i = close_idx + 1
-				continue
-
-		if c == "{":
-			var close_idx := text.find("}", i + 1)
-			if close_idx != -1:
-				var content := text.substr(i + 1, close_idx - i - 1)
-				if balance_values.has(content):
-					result += str(balance_values[content])
-				else:
-					result += "[color=#ffca4b]" + content + "[/color]"
-				i = close_idx + 1
-				continue
-
-		result += c
-		i += 1
-
-	return result
-
-
-static func _is_bbcode_tag(content: String) -> bool:
-	var tag := content.strip_edges()
-	if tag == "":
-		return false
-
-	if tag.begins_with("/"):
-		tag = tag.substr(1)
-
-	var eq_idx := tag.find("=")
-	if eq_idx != -1:
-		tag = tag.substr(0, eq_idx)
-
-	tag = tag.to_lower()
-	var known_tags := {
-		"b": true,
-		"i": true,
-		"u": true,
-		"s": true,
-		"code": true,
-		"p": true,
-		"center": true,
-		"left": true,
-		"right": true,
-		"fill": true,
-		"indent": true,
-		"url": true,
-		"img": true,
-		"font": true,
-		"font_size": true,
-		"color": true,
-		"bgcolor": true,
-		"outline_size": true,
-		"outline_color": true,
-		"table": true,
-		"cell": true,
-		"ul": true,
-		"ol": true,
-		"li": true,
-		"hint": true,
-		"dropcap": true,
-		"opentype_features": true,
-		"lang": true,
-		"br": true,
-		"lb": true,
-		"rb": true
 	}
-
-	return known_tags.has(tag)
-
-
-static func get_card_id_by_name(card_name: String, prefer_collectible: bool = false) -> String:
-	"""Find the first card ID matching the given name.
-	If prefer_collectible is true, prioritise Collectible entries."""
-	var fallback := ""
-	for id in CARDS:
-		if CARDS[id].get("Name", "") == card_name:
-			if prefer_collectible and CARDS[id].get("Collectible", false):
-				return id
-			if fallback == "":
-				fallback = id
-	return fallback
-
-
-static func apply_power_visual(card_node: Node, card_data: Dictionary, source_card: Node = null) -> void:
-	"""Apply power text/icon UI rules.
-	Landmark cards hide both the Power label and the CardPower sprite."""
-	if card_node == null:
-		return
-
-	var power_label = card_node.get_node_or_null("CardFront/Power")
-	var power_sprite = card_node.get_node_or_null("CardFront/CardPower")
-	var is_landmark := str(card_data.get("Type", "")) == "Landmark"
-	var should_show_power := (not is_landmark) and card_data.has("Power")
-
-	if power_label:
-		power_label.visible = should_show_power
-		if should_show_power:
-			if source_card and source_card.has_method("get_power_display_text_for_base"):
-				power_label.text = source_card.get_power_display_text_for_base(int(card_data.get("Power", 0)))
-			else:
-				power_label.text = str(card_data.get("Power", 0))
-		else:
-			power_label.text = ""
-
-	if power_sprite:
-		power_sprite.visible = should_show_power
+}

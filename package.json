@@ -7,7 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "convert-db": "node scripts/convert-db.mjs",
+    "convert-cards": "node scripts/convert-db.mjs --only cards",
+    "convert-keywords": "node scripts/convert-db.mjs --only keywords",
+    "convert-vocabs": "node scripts/convert-db.mjs --only vocabs"
   },
   "dependencies": {
     "next": "16.1.6",
