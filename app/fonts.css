@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'BeaufortForLOL';
+  src: url('/fonts/beaufort/BeaufortforLOL-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'UniversLOL';
+  src: url('/fonts/univers/UniversRegular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'UniversLOL';
+  src: url('/fonts/univers/UniversBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'UniversCnRg';
+  src: url('/fonts/univers/UniversCnRg.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

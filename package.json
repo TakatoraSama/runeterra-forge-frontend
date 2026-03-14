@@ -2,6 +2,7 @@
   "name": "runeterra-forge-frontend",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "bun@1.2.22",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,13 +12,18 @@
   "dependencies": {
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "typescript": "^5.9.3"
   },
   "ignoreScripts": [
     "sharp",

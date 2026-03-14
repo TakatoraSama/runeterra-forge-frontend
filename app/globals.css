@@ -1,15 +1,85 @@
 @import "tailwindcss";
 
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Backgrounds & Structure */
+  --color-bg-void:        #1a1410;
+  --color-bg-card:        #221c15;
+  --color-bg-panel:       #2e2318;
+  --color-bg-surface:     #3d2e1e;
+  --color-border-dark:    #4a3825;
+
+  /* Gold Accent */
+  --color-gold-shadow:    #8a6a28;
+  --color-gold-mid:       #c8a44a;
+  --color-gold-highlight: #e8c96a;
+  --color-gold-shine:     #f5e090;
+
+  /* Text */
+  --color-text-primary:   #f2e8d0;
+  --color-text-muted:     #b8a882;
+  --color-text-disabled:  #7a6a50;
+
+  /* Interactive & Status */
+  --color-blue:           #2e6fb5;
+  --color-blue-glow:      #5ba3e0;
+  --color-red:            #c44030;
+  --color-red-highlight:  #e05a46;
+  --color-mana:           #d47a20;
+
+  /* Card States */
+  --card-opacity-default: 1;
+  --card-opacity-in-deck: 0.4;
+
+  /* Spacing & Radius */
+  --radius-card:   6px;
+  --radius-panel:  8px;
+  --radius-badge:  50%;
+  --radius-btn:    6px;
+
+  /* Typography */
+  --font-display: 'BeaufortForLOL', serif;
+  --font-body:    'UniversLOL', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Shadows & Glows */
+  --shadow-card:        0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover:  0 0 0 2px var(--color-blue), 0 0 16px rgba(91, 163, 224, 0.35);
+  /* --shadow-gold-border: 0 0 0 1.5px var(--color-gold-mid); */
+  --shadow-panel:       0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'UniversLOL', sans-serif;
+
+  /* Expose brand palette to Tailwind v4 */
+  --color-bg-void:        var(--color-bg-void);
+  --color-bg-card:        var(--color-bg-card);
+  --color-bg-panel:       var(--color-bg-panel);
+  --color-bg-surface:     var(--color-bg-surface);
+  --color-border-dark:    var(--color-border-dark);
+  --color-gold-shadow:    var(--color-gold-shadow);
+  --color-gold-mid:       var(--color-gold-mid);
+  --color-gold-highlight: var(--color-gold-highlight);
+  --color-gold-shine:     var(--color-gold-shine);
+  --color-text-primary:   var(--color-text-primary);
+  --color-text-muted:     var(--color-text-muted);
+  --color-text-disabled:  var(--color-text-disabled);
+  --color-blue:           var(--color-blue);
+  --color-blue-glow:      var(--color-blue-glow);
+  --color-red:            var(--color-red);
+  --color-red-highlight:  var(--color-red-highlight);
+  --color-mana:           var(--color-mana);
+
+  /* Expose font tokens */
+  --font-body:    var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono:    var(--font-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +90,75 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg-void);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+}
+
+@layer utilities {
+  /* ── Reusable component utilities ───────────────────────────── */
+
+  .input-field {
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-dark);
+    border-radius: var(--radius-btn);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s ease;
+    width: 100%;
+  }
+
+  .input-field:focus {
+    border-color: var(--color-gold-mid);
+  }
+
+  .btn-gold {
+    background: var(--color-gold-mid);
+    color: var(--color-bg-void);
+    border: none;
+    border-radius: var(--radius-btn);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .btn-gold:hover {
+    background: var(--color-gold-highlight);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border-dark);
+    border-radius: var(--radius-btn);
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--color-gold-mid);
+    color: var(--color-text-primary);
+  }
+
+  /* ── Card ──────────────────────────────────────────────────── */
+  .card-base {
+    /* box-shadow: var(--shadow-card), var(--shadow-gold-border); */
+    border-radius: var(--radius-card);
+    transition: box-shadow 0.15s ease, opacity 0.15s ease;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-base:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
 }

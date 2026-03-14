@@ -1,0 +1,442 @@
+export interface CardData {
+  Name: string;
+  Region: string[];
+  Type: 'Champion' | 'Follower' | 'Landmark';
+  SubType: string;
+  Collectible: boolean;
+  Sprite: string;
+  Level?: number;
+  Cost: number;
+  Power?: number;
+  Keyword: string[];
+  Skill: string;
+  LevelUp?: string;
+  LevelUpTo?: string | null;
+  AbilityType?: string;
+  BalanceValues?: Record<string, number>;
+  PreviewTooltip?: string[];
+}
+
+export const CARDS: Record<string, CardData> = {
+  // ── Champions – Azir Line ──────────────────────────────────────────────────
+  Azir1: {
+    Name: 'Azir', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Azir1.webp', Level: 1,
+    Cost: 6, Power: 5, Keyword: [],
+    Skill: '{Game Start}: Summon a [Buried Sun Disc] at mid lane.',
+    LevelUp: "You've summoned {ally_threshold}+ allies or landmarks.",
+    LevelUpTo: 'Azir2', AbilityType: 'summon_sun_disc',
+    BalanceValues: { ally_threshold: 6 },
+    PreviewTooltip: ['Azir1', 'Azir2', 'Azir3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Azir2: {
+    Name: 'Azir', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Azir2.webp', Level: 2,
+    Cost: 6, Power: 6, Keyword: [],
+    Skill: '{Aura}: Your other Ascended allies in play have +{aura_power} Power.',
+    LevelUp: "You've {restored the Sun Disc}.",
+    LevelUpTo: 'Azir3', AbilityType: 'aura_ascended_buff',
+    BalanceValues: { aura_power: 2 },
+    PreviewTooltip: ['Azir1', 'Azir2', 'Azir3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Azir3: {
+    Name: 'Azir', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Azir3.webp', Level: 3,
+    Cost: 6, Power: 8, Keyword: ['Barrier'],
+    Skill: '{Aura}: Your other Ascended allies in play have +{aura_power} Power and their {Game End} skill activate twice.',
+    LevelUp: '', LevelUpTo: null, AbilityType: 'aura_ascended_buff',
+    BalanceValues: { aura_power: 2 },
+    PreviewTooltip: ['Azir1', 'Azir2', 'Azir3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+
+  // ── Champions – Renekton Line ──────────────────────────────────────────────
+  Renekton1: {
+    Name: 'Renekton', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Renekton1.webp', Level: 1,
+    Cost: 3, Power: 4, Keyword: ['Challenger'],
+    Skill: "{Round Start}: Grant me +{win_power} Power if you're winning here.",
+    LevelUp: "I've increased my Power by {power_threshold}+.",
+    LevelUpTo: 'Renekton2', AbilityType: 'conditional_buff',
+    BalanceValues: { win_power: 2, power_threshold: 4 },
+    PreviewTooltip: ['Renekton1', 'Renekton2', 'Renekton3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Renekton2: {
+    Name: 'Renekton', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Renekton2.webp', Level: 2,
+    Cost: 3, Power: 5, Keyword: ['Challenger'],
+    Skill: "{Round Start}: Grant me +{win_power} Power if you're winning here.",
+    LevelUp: "You've {restored the Sun Disc}.",
+    LevelUpTo: 'Renekton3', AbilityType: 'conditional_buff',
+    BalanceValues: { win_power: 3 },
+    PreviewTooltip: ['Renekton1', 'Renekton2', 'Renekton3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Renekton3: {
+    Name: 'Renekton', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Renekton3.webp', Level: 3,
+    Cost: 3, Power: 10, Keyword: ['Challenger'],
+    Skill: "{Round Start}: Grant me +{win_power} Power if you're winning here. [br] {Game End}: Grant an enemy here -{enemy_debuff} Power",
+    LevelUp: '', LevelUpTo: null, AbilityType: 'conditional_buff',
+    BalanceValues: { win_power: 3, enemy_debuff: 3 },
+    PreviewTooltip: ['Renekton1', 'Renekton2', 'Renekton3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+
+  // ── Champions – Nasus Line ─────────────────────────────────────────────────
+  Nasus1: {
+    Name: 'Nasus', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Nasus1.webp', Level: 1,
+    Cost: 2, Power: 2, Keyword: [],
+    Skill: '{Round End}: Kills the weakest ally here and grant me +{kill_power} Power.',
+    LevelUp: "You've killed {kill_threshold}+ units.",
+    LevelUpTo: 'Nasus2', AbilityType: 'kill_ally_buff',
+    BalanceValues: { kill_power: 2, kill_threshold: 2 },
+    PreviewTooltip: ['Nasus1', 'Nasus2', 'Nasus3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Nasus2: {
+    Name: 'Nasus', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Nasus2.webp', Level: 2,
+    Cost: 2, Power: 3, Keyword: ['Fearsome'],
+    Skill: '{Round End}: Kills the weakest ally here and grant me +{kill_power} Power.',
+    LevelUp: "You've {restored the Sun Disc}.",
+    LevelUpTo: 'Nasus3', AbilityType: 'kill_ally_buff',
+    BalanceValues: { kill_power: 3 },
+    PreviewTooltip: ['Nasus1', 'Nasus2', 'Nasus3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Nasus3: {
+    Name: 'Nasus', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Nasus3.webp', Level: 3,
+    Cost: 2, Power: 10, Keyword: ['Fearsome'],
+    Skill: '{Round End}: Kills the weakest ally here and grant me +{kill_power} Power. [br] {Game End}: Kill an enemy here that has less power than me.',
+    LevelUp: '', LevelUpTo: null, AbilityType: 'kill_ally_buff',
+    BalanceValues: { kill_power: 3 },
+    PreviewTooltip: ['Nasus1', 'Nasus2', 'Nasus3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+
+  // ── Champions – Xerath Line ────────────────────────────────────────────────
+  Xerath1: {
+    Name: 'Xerath', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Xerath1.webp', Level: 1,
+    Cost: 4, Power: 3, Keyword: [],
+    Skill: '{Play}: Drain {drain_power} Power from other units here.',
+    LevelUp: "I've seen {ally_threshold}+ allies in play with increased power.",
+    LevelUpTo: 'Xerath2', AbilityType: 'drain_power',
+    BalanceValues: { drain_power: 2, ally_threshold: 4 },
+    PreviewTooltip: ['Xerath1', 'Xerath2', 'Xerath3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Xerath2: {
+    Name: 'Xerath', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Xerath2.webp', Level: 2,
+    Cost: 4, Power: 4, Keyword: [],
+    Skill: '{Aura}: Back-row enemies here have -{aura_debuff} Power.',
+    LevelUp: "You've {restored the Sun Disc}.",
+    LevelUpTo: 'Xerath3', AbilityType: 'aura_debuff',
+    BalanceValues: { aura_debuff: 1 },
+    PreviewTooltip: ['Xerath1', 'Xerath2', 'Xerath3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  Xerath3: {
+    Name: 'Xerath', Region: ['Shurima'], Type: 'Champion', SubType: 'Ascended',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Xerath3.webp', Level: 3,
+    Cost: 4, Power: 7, Keyword: ['Barrier'],
+    Skill: '{Aura}: Back-row enemies have -{aura_debuff} Power. [br] {Game End}: Grant me the Power of front-row enemies here.',
+    LevelUp: '', LevelUpTo: null, AbilityType: 'aura_debuff',
+    BalanceValues: { aura_debuff: 1 },
+    PreviewTooltip: ['Xerath1', 'Xerath2', 'Xerath3', 'BuriedSunDisc', 'RestoredSunDisc'],
+  },
+
+  // ── Champions – Tryndamere Line ────────────────────────────────────────────
+  Tryndamere1: {
+    Name: 'Tryndamere', Region: ['Freljord'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Tryndamere1.webp', Level: 1,
+    Cost: 2, Power: 3, Keyword: [],
+    Skill: '',
+    LevelUp: 'If I would die, I Level Up instead.',
+    LevelUpTo: 'Tryndamere2', AbilityType: 'levelup_on_death',
+    PreviewTooltip: ['Tryndamere1', 'Tryndamere2'],
+  },
+  Tryndamere2: {
+    Name: 'Tryndamere', Region: ['Freljord'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Tryndamere2.webp', Level: 2,
+    Cost: 2, Power: 4, Keyword: ['Fearsome', 'Tough'],
+    Skill: 'If I would die, grant me +{survive_power} Power instead.',
+    LevelUp: '', LevelUpTo: null, AbilityType: 'survive_death',
+    BalanceValues: { survive_power: 2 },
+    PreviewTooltip: ['Tryndamere1', 'Tryndamere2'],
+  },
+
+  // ── Champions – Trundle Line ───────────────────────────────────────────────
+  Trundle1: {
+    Name: 'Trundle', Region: ['Freljord'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Trundle1.webp', Level: 1,
+    Cost: 3, Power: 3, Keyword: [],
+    Skill: '{Play}: Create an [Ice Pillar] in hand.',
+    LevelUp: "You've played an [Ice Pillar].",
+    LevelUpTo: 'Trundle2', AbilityType: 'create_card',
+    PreviewTooltip: ['Trundle1', 'Trundle2', 'IcePillar'],
+  },
+  Trundle2: {
+    Name: 'Trundle', Region: ['Freljord'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Trundle2.webp', Level: 2,
+    Cost: 3, Power: 4, Keyword: ['Regeneration'],
+    Skill: '{Game End}: Grant me +{behold_power} Power for each {mana_threshold}+ cost unit you behold.',
+    LevelUp: '', LevelUpTo: null, AbilityType: 'conditional_buff',
+    BalanceValues: { behold_power: 2, mana_threshold: 5 },
+    PreviewTooltip: ['Trundle1', 'Trundle2', 'IcePillar'],
+  },
+
+  // ── Champions – Ahri Line ──────────────────────────────────────────────────
+  Ahri1: {
+    Name: 'Ahri', Region: ['Ionia'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Ahri1.webp', Level: 1,
+    Cost: 1, Power: 2, Keyword: ['Elusive'],
+    Skill: 'Each round, when I {swap lane}, {recall} the weakest ally here.',
+    LevelUp: "I've recalled {recall_threshold}+ allies.",
+    LevelUpTo: 'Ahri2', AbilityType: 'swap_arrive_recall',
+    BalanceValues: { recall_threshold: 3 },
+    PreviewTooltip: ['Ahri1', 'Ahri2'],
+  },
+  Ahri2: {
+    Name: 'Ahri', Region: ['Ionia'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Ahri2.webp', Level: 2,
+    Cost: 1, Power: 3, Keyword: ['Elusive'],
+    Skill: 'Each round, when I {swap lane}, {recall} the weakest ally here and reduce its cost by {recall_cost_reduction}.',
+    LevelUp: '', LevelUpTo: null, AbilityType: 'swap_arrive_recall',
+    BalanceValues: { recall_cost_reduction: 1 },
+    PreviewTooltip: ['Ahri1', 'Ahri2'],
+  },
+
+  // ── Champions – Kennen Line ────────────────────────────────────────────────
+  Kennen1: {
+    Name: 'Kennen', Region: ['Bandle City', 'Ionia'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Kennen1.webp', Level: 1,
+    Cost: 1, Power: 1, Keyword: [],
+    Skill: '{Play}: {Stun} an enemy here.',
+    LevelUp: "You've summoned the same ally {summon_threshold}+ times.",
+    LevelUpTo: 'Kennen2', AbilityType: 'stun_enemy',
+    BalanceValues: { summon_threshold: 3 },
+    PreviewTooltip: ['Kennen1', 'Kennen2'],
+  },
+  Kennen2: {
+    Name: 'Kennen', Region: ['Bandle City', 'Ionia'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Kennen2.webp', Level: 2,
+    Cost: 1, Power: 2, Keyword: [],
+    Skill: '{Play}: {Stun} an enemy here and grant it -{power_decrease} Power.',
+    LevelUp: '', LevelUpTo: '', AbilityType: 'stun_enemy',
+    BalanceValues: { power_decrease: 1 },
+    PreviewTooltip: ['Kennen1', 'Kennen2'],
+  },
+
+  // ── Champions – Irelia Line ────────────────────────────────────────────────
+  Irelia1: {
+    Name: 'Irelia', Region: ['Ionia'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Irelia1.webp', Level: 1,
+    Cost: 3, Power: 1, Keyword: ['Elusive'],
+    Skill: 'When I {swap lane}, summon a [Blade] at the original lane.',
+    LevelUp: "You've summoned {ally_threshold}+ allies.",
+    LevelUpTo: 'Irelia2', AbilityType: 'swap_arrive_summon_blade',
+    BalanceValues: { ally_threshold: 7 },
+    PreviewTooltip: ['Irelia1', 'Irelia2', 'Blade'],
+  },
+  Irelia2: {
+    Name: 'Irelia', Region: ['Ionia'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Irelia2.webp', Level: 2,
+    Cost: 3, Power: 2, Keyword: ['Elusive'],
+    Skill: 'When I {swap lane}, summon a [Blade] at the original lane. [br] {Aura}: 1 cost allies have +{power_increase} Power.',
+    LevelUp: '', LevelUpTo: '', AbilityType: 'swap_arrive_summon_blade',
+    BalanceValues: { power_increase: 1 },
+    PreviewTooltip: ['Irelia1', 'Irelia2', 'Blade'],
+  },
+
+  // ── Champions – Rumble Line ────────────────────────────────────────────────
+  Rumble1: {
+    Name: 'Rumble', Region: ['Bandle City', 'Noxus'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Rumble1.webp', Level: 1,
+    Cost: 3, Power: 5, Keyword: [],
+    Skill: '{Play}: Discard a 1-2, 3-4, and 5+ cost card.',
+    LevelUp: "You've discarded {discard_threshold}+ times.",
+    LevelUpTo: 'Rumble2', AbilityType: '',
+    BalanceValues: { discard_threshold: 4 },
+    PreviewTooltip: ['Rumble1', 'Rumble2'],
+  },
+  Rumble2: {
+    Name: 'Rumble', Region: ['Bandle City', 'Noxus'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Rumble2.webp', Level: 2,
+    Cost: 3, Power: 6, Keyword: [],
+    Skill: 'When I level up, for each of your discarded cards, create a random card with a cost equal to the discarded card\'s cost and reduce its cost by 1.',
+    LevelUp: '', LevelUpTo: 'Rumble2', AbilityType: '',
+    BalanceValues: {},
+    PreviewTooltip: ['Rumble1', 'Rumble2'],
+  },
+
+  // ── Champions – Sion Line ──────────────────────────────────────────────────
+  Sion1: {
+    Name: 'Sion', Region: ['Noxus'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Sion1.webp', Level: 1,
+    Cost: 6, Power: 8, Keyword: [],
+    Skill: "When I'm discarded, grant another ally in hand +2 Power and return me to your hand.",
+    LevelUp: "You've discarded or summoned {power_threshold}+ Power.",
+    LevelUpTo: 'Sion2', AbilityType: '',
+    BalanceValues: { power_threshold: 32 },
+    PreviewTooltip: ['Sion1', 'Sion2'],
+  },
+  Sion2: {
+    Name: 'Sion', Region: ['Noxus'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Sion2.webp', Level: 2,
+    Cost: 6, Power: 9, Keyword: [],
+    Skill: "I have +{power_increase} Power for each card you've discarded this game.",
+    LevelUp: '', LevelUpTo: '', AbilityType: '',
+    BalanceValues: { power_increase: 2 },
+    PreviewTooltip: ['Sion1', 'Sion2'],
+  },
+
+  // ── Champions – Nautilus Line ──────────────────────────────────────────────
+  Nautilus1: {
+    Name: 'Nautilus', Region: ['Bilgewater'], Type: 'Champion', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/Nautilus1.webp', Level: 1,
+    Cost: 5, Power: 0, Keyword: ['Tough'],
+    Skill: '',
+    LevelUp: 'When you are {Deep}. When I level up, create a {created_cost}+ cost sea monster in your hand.',
+    LevelUpTo: 'Nautilus2', AbilityType: '',
+    BalanceValues: { created_cost: 3 },
+    PreviewTooltip: ['Nautilus1', 'Nautilus2'],
+  },
+  Nautilus2: {
+    Name: 'Nautilus', Region: ['Bilgewater'], Type: 'Champion', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Nautilus2.webp', Level: 2,
+    Cost: 5, Power: 13, Keyword: ['Tough', 'Fearsome'],
+    Skill: '',
+    LevelUp: '{Aura}: Sea Monsters allies cost {cost_reduction} less.',
+    LevelUpTo: '', AbilityType: '',
+    BalanceValues: { cost_reduction: 3 },
+    PreviewTooltip: ['Nautilus1', 'Nautilus2'],
+  },
+
+  // ── Landmarks ─────────────────────────────────────────────────────────────
+  BuriedSunDisc: {
+    Name: 'Buried Sun Disc', Region: ['Shurima'], Type: 'Landmark', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/BuriedSunDisc.webp',
+    Cost: 0, Keyword: [],
+    Skill: 'Once you have {ascended_threshold}+ level 2 Ascended allies in play, {restore the Sun Disc}.',
+    LevelUpTo: 'RestoredSunDisc', AbilityType: 'transform_landmark',
+    BalanceValues: { ascended_threshold: 2 },
+    PreviewTooltip: ['BuriedSunDisc', 'RestoredSunDisc'],
+  },
+  RestoredSunDisc: {
+    Name: 'Restored Sun Disc', Region: ['Shurima'], Type: 'Landmark', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/RestoredSunDisc.webp',
+    Cost: 0, Keyword: [],
+    Skill: 'Draw {draw_count} for each Ascended ally that is not beheld. [br] For the rest of the game, your level 2 Ascended allies are level 3.',
+    LevelUpTo: null, AbilityType: 'ascend_champions',
+    BalanceValues: { draw_count: 1 },
+    PreviewTooltip: ['BuriedSunDisc', 'RestoredSunDisc'],
+  },
+
+  // ── Followers ──────────────────────────────────────────────────────────────
+  IcePillar: {
+    Name: 'Ice Pillar', Region: ['Freljord'], Type: 'Follower', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/IcePillar.webp',
+    Cost: 5, Power: 5, Keyword: ['Regeneration'],
+    Skill: '{Play}: Next turn, you get +{mana_bonus} mana.',
+    AbilityType: 'mana_ramp',
+    BalanceValues: { mana_bonus: 5 },
+    PreviewTooltip: ['Trundle1', 'Trundle2', 'IcePillar'],
+  },
+  Chip: {
+    Name: 'Chip', Region: ['Targon'], Type: 'Follower', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Chip.webp',
+    Cost: 1, Power: 1, Keyword: [],
+    Skill: '"Snow on my feat! Rain on my head!"',
+    AbilityType: 'none', BalanceValues: {},
+    PreviewTooltip: ['Chip'],
+  },
+  Blade: {
+    Name: 'Blade', Region: ['Ionia'], Type: 'Follower', SubType: '',
+    Collectible: false, Sprite: 'res://Assets/CardSprites/Blade.webp',
+    Cost: 1, Power: 0, Keyword: [],
+    Skill: '{Aura}: Other allied [Blades] have +{aura_power} Power.',
+    AbilityType: 'aura_blade_buff',
+    BalanceValues: { aura_power: 1 },
+    PreviewTooltip: ['Irelia1', 'Irelia2', 'Blade'],
+  },
+  NavoriConspirator: {
+    Name: 'Navori Conspirator', Region: ['Ionia'], Type: 'Follower', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 2, Power: 4, Keyword: [],
+    Skill: '{Play}: {Recall} other allies here.',
+    AbilityType: 'recall_allies_same_lane',
+    BalanceValues: { aura_power: 1 },
+    PreviewTooltip: ['NavoriConspirator'],
+  },
+  SolitaryMonk: {
+    Name: 'Solitary Monk', Region: ['Ionia'], Type: 'Follower', SubType: '',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 2, Power: 4, Keyword: [],
+    Skill: '{Play}: {Recall} {recall_cost} cost allies.',
+    AbilityType: 'recall_cost_allies',
+    BalanceValues: { recall_cost: 1 },
+    PreviewTooltip: ['SolitaryMonk'],
+  },
+  SeaScarab: {
+    Name: 'Sea Scarab', Region: ['Shadow Isles'], Type: 'Follower', SubType: 'Sea Monster',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 2, Power: 2, Keyword: ["Deep"],
+    Skill: '', AbilityType: '', BalanceValues: {},
+    PreviewTooltip: ['SeaScarab'],
+  },
+  Megatusk: {
+    Name: 'Megatusk', Region: ['Bilgewater'], Type: 'Follower', SubType: 'Sea Monster',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 3, Power: 3, Keyword: ["Deep"],
+    Skill: '', AbilityType: '', BalanceValues: {},
+    PreviewTooltip: ['Megatusk'],
+  },
+  TheBeastBelow: {
+    Name: 'The Beast Below', Region: ['Bilgewater'], Type: 'Follower', SubType: 'Sea Monster',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 4, Power: 4, Keyword: ["Deep"],
+    Skill: '', AbilityType: '', BalanceValues: {},
+    PreviewTooltip: ['TheBeastBelow'],
+  },
+  AbyssalEye: {
+    Name: 'Abyssal Eye', Region: ['Bilgewater'], Type: 'Follower', SubType: 'Sea Monster',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 5, Power: 5, Keyword: ["Deep"],
+    Skill: '', AbilityType: '', BalanceValues: {},
+    PreviewTooltip: ['AbyssalEye'],
+  },
+  DevourerOfTheDepths: {
+    Name: 'Devourer of the Depths', Region: ['Bilgewater'], Type: 'Follower', SubType: 'Sea Monster',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 6, Power: 6, Keyword: ["Deep"],
+    Skill: '', AbilityType: '', BalanceValues: {},
+    PreviewTooltip: ['DevourerOfTheDepths'],
+  },
+  TerrorOfTheTides: {
+    Name: 'Terror of the Tides', Region: ['Bilgewater'], Type: 'Follower', SubType: 'Sea Monster',
+    Collectible: true, Sprite: 'res://Assets/CardSprites/DummySprite.webp',
+    Cost: 7, Power: 7, Keyword: ["Deep"],
+    Skill: '', AbilityType: '', BalanceValues: {},
+    PreviewTooltip: ['TerrorOfTheTides'],
+  },
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+export type CollectibleCard = { id: string } & CardData;
+
+export function getCollectibleCards(): CollectibleCard[] {
+  return Object.entries(CARDS)
+    .filter(([, data]) => data.Collectible)
+    .map(([id, data]) => ({ id, ...data }));
+}
+
+export function getAllRegions(): string[] {
+  const regions = new Set<string>();
+  for (const card of Object.values(CARDS)) {
+    for (const r of card.Region) regions.add(r);
+  }
+  return Array.from(regions).sort();
+}
+
+/** Convert Godot asset path to web public path */
+export function toWebSpritePath(godotPath: string): string {
+  return godotPath.replace('res://Assets/', '/');
+}
