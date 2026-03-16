@@ -76,8 +76,6 @@ const regionGradients: Record<string, string> = {
 
 // Shared className for every full-card overlay PNG
 const OVERLAY = "absolute inset-0 w-full h-full object-fill pointer-events-none select-none";
-const KEYWORD_BG = "absolute inset-0 w-full h-full object-fill pointer-events-none select-none";
-const KEYWORD_ICON = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[57%] h-[57%] object-contain pointer-events-none select-none";
 
 const BBCODE_TAGS = new Set([
   'b','i','u','s','code','p','center','left','right','fill','indent',
@@ -171,18 +169,18 @@ function parseDescription(text: string): ReactNode {
     const token = match[1];
     if (token.startsWith('{')) {
       const word = token.slice(1, -1);
-      parts.push(<span key={key++} style={{ color: 'var(--color-gold-mid)' }}>{word}</span>);
+      parts.push(<span key={key++} className="text-gold-mid">{word}</span>);
     } else if (token.startsWith(':')) {
       const word = token.slice(1, -1);
       parts.push(
-        <span key={key++} style={{ display: 'inline', color: 'var(--color-gold-mid)' }}>
-          <img src={`/KeywordSprites/${word}.webp`} alt={word} style={{ width: '1em', height: '1em', verticalAlign: '-0.15em', display: 'inline-block', marginRight: '0.1em' }} />
+        <span key={key++} className="inline text-gold-mid">
+          <img src={`/KeywordSprites/${word}.webp`} alt={word} className="w-[1em] h-[1em] align-[-0.15em] inline-block mr-[0.1em]" />
           {word}
         </span>
       );
     } else {
       const word = token.slice(1, -1);
-      parts.push(<span key={key++} style={{ color: '#54a5ff' }}>{word}</span>);
+      parts.push(<span key={key++} className="text-[#54a5ff]">{word}</span>);
     }
     last = match.index! + token.length;
   }
@@ -211,16 +209,13 @@ export default function Card({
   // Only truly dynamic / non-Tailwind values remain here
   const containerStyle: CSSProperties = {
     width: typeof width === 'number' ? `${width}px` : width,
-    cursor: onClick ? 'pointer' : undefined,
     opacity: isInDeck ? 'var(--card-opacity-in-deck)' : undefined,
-    // Container query: enables cqw font units inside
-    containerType: 'inline-size',
   };
 
   // ─── FACE DOWN ──────────────────────────────────────────────────────────────
   if (isFaceDown) {
     return (
-      <div style={containerStyle} className={`card-base aspect-63/88 shrink-0 ${className}`} onClick={onClick}>
+      <div style={containerStyle} className={`card-base aspect-63/88 shrink-0 @container ${onClick ? 'cursor-pointer' : ''} ${className}`} onClick={onClick}>
         <img src="/CardComponent/card_back.png" alt="Card back" className={OVERLAY} draggable={false} />
       </div>
     );
@@ -233,6 +228,8 @@ export default function Card({
   // ─── Tooltip state ────────────────────────────────────────────────────────
   const [tooltip, setTooltip] = useState<{ name: string; description: string; x: number; y: number } | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoverTarget = useRef<string | null>(null);
 
   function resolveTooltipData(el: HTMLElement): { name: string; description: string } | null {
     const kw = el.dataset.keyword;
@@ -244,6 +241,19 @@ export default function Card({
 
   function showTooltipFor(name: string, description: string, x: number, y: number) {
     setTooltip({ name, description, x, y });
+  }
+
+  function startHover(name: string, description: string, x: number, y: number) {
+    if (hoverTarget.current === name) return;
+    cancelHover();
+    hoverTarget.current = name;
+    hoverTimer.current = setTimeout(() => showTooltipFor(name, description, x, y), 500);
+  }
+
+  function cancelHover() {
+    if (hoverTimer.current) { clearTimeout(hoverTimer.current); hoverTimer.current = null; }
+    hoverTarget.current = null;
+    setTooltip(null);
   }
 
   function startLongPress(name: string, description: string, x: number, y: number) {
@@ -271,14 +281,14 @@ export default function Card({
   return (
     <div
       style={containerStyle}
-      className={`card-base aspect-63/88 shrink-0 ${className}`}
+      className={`card-base aspect-63/88 shrink-0 @container ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
     >
       {/* ── Layer 1: Card base frame (full-card overlay) ──────────────────────── */}
-      <img src="/CardComponent/card_base.png" alt="" aria-hidden className={OVERLAY} style={{ zIndex: 1 }} draggable={false} />
+      <img src="/CardComponent/card_base.png" alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
 
       {/* ── Layer 2: Character art (rendered above frame, clipped by frame alpha mask) ── */}
       <div
@@ -306,37 +316,32 @@ export default function Card({
       </div>
 
       {/* ── Layer 3: Art frame source/mask reference (kept under art layer) ───── */}
-      <img src="/CardComponent/card_sprite.png" alt="" aria-hidden className={OVERLAY} style={{ zIndex: 2 }} draggable={false} />
+      <img src="/CardComponent/card_sprite.png" alt="" aria-hidden className={`${OVERLAY} z-2`} draggable={false} />
 
       {/* ── Layer 4: Shadow overlay (full-card PNG) ───────────────────────────── */}
-      <img src="/CardComponent/card_shadow.png" alt="" aria-hidden className={OVERLAY} style={{ zIndex: 4 }} draggable={false} />
+      <img src="/CardComponent/card_shadow.png" alt="" aria-hidden className={`${OVERLAY} z-4`} draggable={false} />
 
       {/* ── Layer 5a: SubType banner (full-card PNG, only when subType present) ── */}
       {hasSubType && (
-        <img src="/CardComponent/card_subtype.png" alt="" aria-hidden className={OVERLAY} style={{ zIndex: 5 }} draggable={false} />
+        <img src="/CardComponent/card_subtype.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
       )}
 
       {/* ── Layer 5b: Mana badge (full-card PNG) ─────────────────────────────── */}
-      <img src="/CardComponent/card_mana.png" alt="" aria-hidden className={OVERLAY} style={{ zIndex: 5 }} draggable={false} />
+      <img src="/CardComponent/card_mana.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
 
       {/* ── Layer 5c: Power badge (full-card PNG, only when power present) ──────── */}
       {hasPower && (
-        <img src="/CardComponent/card_power.png" alt="" aria-hidden className={OVERLAY} style={{ zIndex: 5 }} draggable={false} />
+        <img src="/CardComponent/card_power.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
       )}
 
       {/* ── Layer 6: Text overlays (cqw = % of card container width) ─────────── */}
 
       {/* Cost — top-left, inside mana badge */}
       <div
-        className="absolute z-6 flex items-center justify-center select-none"
+        className="absolute z-6 flex items-center justify-center select-none font-display font-bold text-cq-xl text-text-primary leading-none"
         style={{
           top: '-2cqw', left: '1cqw',
           width: '22cqw', height: '22cqw',
-          fontFamily: 'var(--font-display)',
-          fontSize: '11cqw',
-          fontWeight: 700,
-          color: 'var(--color-text-primary)',
-          lineHeight: 1,
           textShadow: '0 1px 4px rgba(0,0,0,0.9)',
         }}
       >
@@ -346,15 +351,10 @@ export default function Card({
       {/* Power — top-right, inside power badge */}
       {hasPower && (
         <div
-          className="absolute z-6 flex items-center justify-center select-none"
+          className="absolute z-6 flex items-center justify-center select-none font-display font-bold text-cq-xl text-text-primary leading-none"
           style={{
             top: '-2cqw', right: '1cqw',
             width: '22cqw', height: '22cqw',
-            fontFamily: 'var(--font-display)',
-            fontSize: '11cqw',
-            fontWeight: 700,
-            color: 'var(--color-text-primary)',
-            lineHeight: 1,
             textShadow: '0 1px 4px rgba(0,0,0,0.9)',
           }}
         >
@@ -365,15 +365,11 @@ export default function Card({
       {/* SubType — center-top, inside subtype banner */}
       {hasSubType && (
         <div
-          className="absolute z-6 flex items-center justify-center overflow-hidden whitespace-nowrap text-ellipsis uppercase select-none"
+          className="absolute z-6 flex items-center justify-center overflow-hidden whitespace-nowrap text-ellipsis uppercase select-none text-cq-sm font-normal tracking-[0.05em] text-[#979382]"
           style={{
             top: '2.5cqw', left: '22cqw', right: '22cqw',
             height: '8cqw',
             fontFamily: "'UniversCnRg', sans-serif",
-            fontSize: '4.5cqw',
-            fontWeight: 400,
-            color: '#979382',
-            letterSpacing: '0.05em',
           }}
         >
           {subType}
@@ -387,13 +383,8 @@ export default function Card({
       >
         {/* Card name */}
         <div
-          className="w-full text-center select-none uppercase"
+          className="w-full text-center select-none uppercase font-display font-bold text-cq-lg text-text-primary leading-[1.1]"
           style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '10cqw',
-            fontWeight: 700,
-            color: 'var(--color-text-primary)',
-            lineHeight: 1.1,
             textShadow: '0 0 8px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9)',
           }}
         >
@@ -402,28 +393,30 @@ export default function Card({
 
         {/* Keyword badges — full layout only */}
         {layout === 'full' && keywords && keywords.length > 0 && (
-          <div className="flex flex-wrap justify-center" style={{ gap: '10cqw' }}>
+          <div className="flex flex-wrap justify-center" style={{ gap: '3cqw' }}>
             {keywords.map(kw => (
               <div
                 key={kw}
-                className="relative shrink-0"
-                style={{ width: '13cqw', aspectRatio: '84/72', cursor: 'pointer' }}
-                onMouseEnter={(e) => { const d = resolveTooltipData(e.currentTarget); if (d) showTooltipFor(d.name, d.description, e.clientX, e.clientY); }}
+                className="shrink-0 inline-flex items-center h-[10cqw] gap-[1.5cqw] px-[1cqw] cursor-pointer border-solid border-[2cqw] border-transparent"
+                style={{ borderImage: "url('/CardComponent/card_keyword.png') 8 fill / 1.5cqw / 0 stretch" }}
+                onMouseEnter={(e) => { const d = resolveTooltipData(e.currentTarget); if (d) startHover(d.name, d.description, e.clientX, e.clientY); }}
                 onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
-                onMouseLeave={() => setTooltip(null)}
+                onMouseLeave={() => cancelHover()}
                 onTouchStart={(e) => { const t = e.changedTouches[0]; const d = resolveTooltipData(e.currentTarget); if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
                 onTouchEnd={cancelLongPress}
                 onTouchMove={cancelLongPress}
                 data-keyword={kw}
               >
-                <img src="/CardComponent/card_keyword.png" alt="" aria-hidden className={KEYWORD_BG} draggable={false} />
                 <img
                   src={`/KeywordSprites/${kw}.webp`}
                   alt={kw}
-                  className={KEYWORD_ICON}
+                  className="h-[5.5cqw] aspect-square object-contain"
                   draggable={false}
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
+                <span className="font-display font-bold text-cq-sm text-keyword uppercase tracking-[0.06em] whitespace-nowrap leading-none pointer-events-none select-none">
+                  {kw}
+                </span>
               </div>
             ))}
           </div>
@@ -432,20 +425,16 @@ export default function Card({
         {/* Skill text — full layout only */}
         {layout === 'full' && skill && (
           <div
-            className="w-full h-fit text-center"
+            className="w-full h-fit text-center font-body text-cq-base text-text-primary leading-[1.25]"
             style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '5.5cqw',
-              color: 'var(--color-text-primary)',
-              lineHeight: 1.25,
               textShadow: '0 1px 4px rgba(0,0,0,0.9)',
               display: '-webkit-box',
               // WebkitLineClamp: 3,
               WebkitBoxOrient: 'vertical',
             }}
-            onMouseOver={(e) => { const el = (e.target as HTMLElement).closest('[data-keyword],[data-vocab]') as HTMLElement | null; const d = el ? resolveTooltipData(el) : null; if (d) showTooltipFor(d.name, d.description, e.clientX, e.clientY); else setTooltip(null); }}
+            onMouseOver={(e) => { const el = (e.target as HTMLElement).closest('[data-keyword],[data-vocab]') as HTMLElement | null; const d = el ? resolveTooltipData(el) : null; if (d) startHover(d.name, d.description, e.clientX, e.clientY); else cancelHover(); }}
             onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
-            onMouseLeave={() => setTooltip(null)}
+            onMouseLeave={() => cancelHover()}
             onTouchStart={(e) => { const t = e.changedTouches[0]; const raw = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null; const el = raw?.closest('[data-keyword],[data-vocab]') as HTMLElement | null ?? raw; const d = el ? resolveTooltipData(el) : null; if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
             onTouchEnd={cancelLongPress}
             onTouchMove={cancelLongPress}
@@ -464,20 +453,16 @@ export default function Card({
               draggable={false}
             />
             <div
-              className="w-full overflow-hidden text-center select-none"
+              className="w-full overflow-hidden text-center select-none font-body text-cq-base leading-tight text-[rgb(255,162,100)]"
               style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '5.5cqw',
-                color: 'rgb(255, 162, 100)',
-                lineHeight: 1.25,
                 textShadow: '0 1px 4px rgba(0,0,0,0.9)',
                 display: '-webkit-box',
                 // WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical',
               }}
-              onMouseOver={(e) => { const el = (e.target as HTMLElement).closest('[data-keyword],[data-vocab]') as HTMLElement | null; const d = el ? resolveTooltipData(el) : null; if (d) showTooltipFor(d.name, d.description, e.clientX, e.clientY); else setTooltip(null); }}
+              onMouseOver={(e) => { const el = (e.target as HTMLElement).closest('[data-keyword],[data-vocab]') as HTMLElement | null; const d = el ? resolveTooltipData(el) : null; if (d) startHover(d.name, d.description, e.clientX, e.clientY); else cancelHover(); }}
               onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
-              onMouseLeave={() => setTooltip(null)}
+              onMouseLeave={() => cancelHover()}
               onTouchStart={(e) => { const t = e.changedTouches[0]; const raw = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null; const el = raw?.closest('[data-keyword],[data-vocab]') as HTMLElement | null ?? raw; const d = el ? resolveTooltipData(el) : null; if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
               onTouchEnd={cancelLongPress}
               onTouchMove={cancelLongPress}
@@ -497,17 +482,12 @@ export default function Card({
                   src={`/RegionSprites/${sprite}.webp`}
                   alt={region}
                   title={region}
-                  className="object-contain select-none opacity-70"
+                  className="object-contain select-none opacity-65 mb-[1cqw]"
                   style={{ width: '16cqw', height: '16cqw' }}
                   draggable={false}
                 />
               ) : (
-                <span key={region} className="uppercase select-none whitespace-nowrap" style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '8cqw',
-                  color: 'var(--color-text-muted)',
-                  letterSpacing: '0.06em',
-                }}>
+                <span key={region} className="uppercase select-none whitespace-nowrap font-body text-cq-md text-text-muted tracking-[0.06em]">
                   {region}
                 </span>
               );
@@ -519,42 +499,22 @@ export default function Card({
       {/* ── Tooltip portal (rendered to document.body to escape card overflow/containment) ── */}
       {typeof document !== 'undefined' && tooltip && createPortal(
         <div
+          className="fixed z-9999 w-57.5 bg-bg-panel border border-border-dark py-2 px-2.5 pointer-events-none select-none"
           style={{
-            position: 'fixed',
             left: tooltipLeft,
             top: tooltipTop,
             transform: tooltipNearBottom ? 'translateY(-100%)' : undefined,
-            zIndex: 9999,
-            width: TWIDTH,
-            background: 'var(--color-bg-panel)',
-            border: '1px solid var(--color-border-dark)',
             borderRadius: 'var(--radius-panel)',
             boxShadow: 'var(--shadow-panel)',
-            padding: '8px 10px',
-            pointerEvents: 'none',
-            userSelect: 'none',
           }}
         >
-          <div style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '12px',
-            fontWeight: 700,
-            color: 'var(--color-gold-mid)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            lineHeight: 1.2,
-          }}>
+          <div className="font-display font-bold text-[12px] text-gold-mid uppercase tracking-[0.06em] leading-[1.2]">
             {tooltip.name}
           </div>
           {tooltip.description ? (
             <>
-              <div style={{ height: '1px', background: 'var(--color-border-dark)', margin: '5px 0' }} />
-              <div style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '11px',
-                color: 'var(--color-text-muted)',
-                lineHeight: 1.4,
-              }}>
+              <div className="h-px bg-border-dark my-1.25" />
+              <div className="font-body text-[11px] text-text-muted leading-[1.4]">
                 {parseDescription(tooltip.description)}
               </div>
             </>

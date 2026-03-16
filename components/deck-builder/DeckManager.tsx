@@ -73,8 +73,7 @@ export default function DeckManager({
           value={deckName}
           onChange={e => onNameChange(e.target.value)}
           placeholder="Deck Name"
-          className="input-field py-2 px-3"
-          style={{ fontFamily: 'var(--font-display)' }}
+          className="input-field py-2 px-3 font-display"
         />
 
         {/* <div

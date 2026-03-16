@@ -36,4 +36,12 @@ export const VOCABS: Record<string, VocabData> = {
     Typo: ['Recall', 'Recalled'],
     Description: "Return a unit from the lane to its owner's hand.",
   },
+  Updraft: {
+    Typo: ['Updraft', 'Updrafted'],
+    Description: 'Shuffle X rightmost card(s) from your hand into your deck and reduce their cost by 1.',
+  },
+  RestoredTheSunDisc: {
+    Typo: ['Restored the Sun Disc'],
+    Description: 'Draw 1 for each Ascended ally that is not beheld. For the rest of the game, your level 2 Ascended allies are level 3.',
+  },
 };

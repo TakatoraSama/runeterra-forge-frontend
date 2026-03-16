@@ -29,6 +29,7 @@
   --color-red:            #c44030;
   --color-red-highlight:  #e05a46;
   --color-mana:           #d47a20;
+  --color-keyword:        #eecc7c;
 
   /* Card States */
   --card-opacity-default: 1;
@@ -75,11 +76,20 @@
   --color-red:            var(--color-red);
   --color-red-highlight:  var(--color-red-highlight);
   --color-mana:           var(--color-mana);
-
+  --color-keyword:        var(--color-keyword);
   /* Expose font tokens */
   --font-body:    var(--font-body);
   --font-display: var(--font-display);
   --font-mono:    var(--font-mono);
+}
+
+@theme {
+  /* Card text-size scale — container query width units */
+  --text-cq-xl:   11cqw;   /* cost / power numerals     */
+  --text-cq-lg:   10cqw;   /* card name                 */
+  --text-cq-md:    8cqw;   /* region fallback           */
+  --text-cq-base: 5.5cqw;  /* skill / level-up body     */
+  --text-cq-sm:   4.5cqw;  /* keyword labels / subtype  */
 }
 
 @media (prefers-color-scheme: dark) {
