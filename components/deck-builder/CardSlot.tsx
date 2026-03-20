@@ -17,7 +17,7 @@ export default function CardSlot({ card, isInDeck, onClick, onRightClick, varian
       <GameCard
         name={card.Name}
         cost={card.Cost}
-        power={card.Type !== 'Landmark' ? card.Power : undefined}
+        power={card.Type !== 'Landmark' && card.Type !== 'Spell' ? card.Power : undefined}
         subType={card.SubType || undefined}
         skill={card.Skill || undefined}
         levelUp={card.LevelUp || undefined}
@@ -29,6 +29,7 @@ export default function CardSlot({ card, isInDeck, onClick, onRightClick, varian
         onClick={onClick}
         width="100%"
         layout={variant === 'deck' ? 'full' : 'full'}
+        type={card.Type}
       />
     </div>
   );

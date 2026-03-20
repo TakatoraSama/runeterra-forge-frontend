@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, ReactNode, useState, useRef } from 'react';
+import { CSSProperties, ReactNode, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { KEYWORDS } from '@/lib/KeywordDatabase';
 import { VOCABS } from '@/lib/VocabDatabase';
@@ -22,6 +22,7 @@ export interface CardProps {
   width?: number | string;
   className?: string;
   layout?: 'full' | 'compact';
+  type?: 'Champion' | 'Follower' | 'Landmark' | 'Spell';
 }
 
 // Build alias → canonical vocab key map from Typo arrays
@@ -73,6 +74,32 @@ const regionGradients: Record<string, string> = {
   Targon:         'linear-gradient(160deg, #1a1a3a 0%, #0a0a20 100%)',
   'Bandle City':  'linear-gradient(160deg, #3a2a10 0%, #1a1208 100%)',
 };
+
+// ─── Color helpers for spell card gradient ────────────────────────────────────
+
+function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return [0, 0, l * 100];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h = 0;
+  switch (max) {
+    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+    case g: h = ((b - r) / d + 2) / 6; break;
+    case b: h = ((r - g) / d + 4) / 6; break;
+  }
+  return [h * 360, s * 100, l * 100];
+}
+
+function hslToRgbStr(h: number, s: number, l: number): string {
+  s /= 100; l /= 100;
+  const k = (n: number) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))));
+  return `rgb(${f(0)},${f(8)},${f(4)})`;
+}
 
 // Shared className for every full-card overlay PNG
 const OVERLAY = "absolute inset-0 w-full h-full object-fill pointer-events-none select-none";
@@ -205,7 +232,9 @@ export default function Card({
   width = '100%',
   className = '',
   layout = 'full',
+  type,
 }: CardProps) {
+  const isSpell = type === 'Spell';
   // Only truly dynamic / non-Tailwind values remain here
   const containerStyle: CSSProperties = {
     width: typeof width === 'number' ? `${width}px` : width,
@@ -224,6 +253,76 @@ export default function Card({
   const artGradient = regionGradients[regions[0]] ?? 'linear-gradient(160deg, #2e2318 0%, #1a1410 100%)';
   const hasSubType = !!subType;
   const hasPower = power !== undefined;
+
+  // ─── Spell card auto-shrink refs ─────────────────────────────────────────
+  const containerRef = useRef<HTMLDivElement>(null);
+  const nameSpellRef = useRef<HTMLDivElement>(null);
+  const skillSpellRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isSpell) return;
+    const el = nameSpellRef.current;
+    if (!el) return;
+    const adjust = () => {
+      el.style.fontSize = `${(containerRef.current?.clientWidth ?? 200) * 0.08}px`;
+      while (el.scrollWidth > el.clientWidth) {
+        const cur = parseFloat(getComputedStyle(el).fontSize);
+        if (cur <= 8) break;
+        el.style.fontSize = `${cur - 0.5}px`;
+      }
+    };
+    adjust();
+    const ro = new ResizeObserver(adjust);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isSpell, name]);
+
+  useEffect(() => {
+    if (!isSpell) return;
+    const el = skillSpellRef.current;
+    if (!el) return;
+    const adjust = () => {
+      el.style.fontSize = `${(containerRef.current?.clientWidth ?? 200) * 0.045}px`;
+      while (el.scrollHeight > el.clientHeight) {
+        const cur = parseFloat(getComputedStyle(el).fontSize);
+        if (cur <= 8) break;
+        el.style.fontSize = `${cur - 0.5}px`;
+      }
+    };
+    adjust();
+    const ro = new ResizeObserver(adjust);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isSpell, skill, keywords]);
+
+  // ─── Spell gradient (color extracted from art) ────────────────────────────
+  const [spellGradient, setSpellGradient] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isSpell || !artUrl) { setSpellGradient(null); return; }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = async () => {
+      try {
+        const { getPaletteSync } = await import('colorthief');
+        const palette = getPaletteSync(img, { colorCount: 2 });
+        if (!palette || palette.length < 2) { setSpellGradient(null); return; }
+        const hexToRgb = (hex: string): [number, number, number] => {
+          const n = parseInt(hex.replace('#', ''), 16);
+          return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+        };
+        const [h1, s1, l1] = rgbToHsl(...hexToRgb(palette[0].hex()));
+        const [h2, s2, l2] = rgbToHsl(...hexToRgb(palette[1].hex()));
+        const dark  = hslToRgbStr(h1, s1, Math.max(5,  l1 - 40));
+        const light = hslToRgbStr(h2, s2, Math.min(85, l2));
+        setSpellGradient(`linear-gradient(to right, ${dark}, ${light}, ${dark})`);
+      } catch {
+        setSpellGradient(null);
+      }
+    };
+    img.onerror = () => setSpellGradient(null);
+    img.src = artUrl;
+  }, [isSpell, artUrl]);
 
   // ─── Tooltip state ────────────────────────────────────────────────────────
   const [tooltip, setTooltip] = useState<{ name: string; description: string; x: number; y: number } | null>(null);
@@ -280,6 +379,7 @@ export default function Card({
 
   return (
     <div
+      ref={containerRef}
       style={containerStyle}
       className={`card-base aspect-63/88 shrink-0 @container ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={onClick}
@@ -287,51 +387,113 @@ export default function Card({
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
     >
-      {/* ── Layer 1: Card base frame (full-card overlay) ──────────────────────── */}
-      <img src="/CardComponent/card_base.png" alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
+      {isSpell ? (
+        <>
+          {/* ── Spell Layer 1: Base overlays ─────────────────────────────────── */}
+          <img src="/CardComponent/card_text_spell.png" alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
+          <img src="/CardComponent/card_text_shadow_spell.png" alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
+          <img src="/CardComponent/card_sprite_shadow_spell.png" alt="" aria-hidden className={`${OVERLAY} z-3`} draggable={false} />
 
-      {/* ── Layer 2: Character art (rendered above frame, clipped by frame alpha mask) ── */}
-      <div
-        className="absolute inset-0 z-3 overflow-hidden"
-        style={{
-          WebkitMaskImage: 'url(/CardComponent/card_sprite.png)',
-          WebkitMaskSize: '100% 100%',
-          WebkitMaskRepeat: 'no-repeat',
-          maskImage: 'url(/CardComponent/card_sprite.png)',
-          maskSize: '100% 100%',
-          maskRepeat: 'no-repeat',
-        }}
-      >
-        {artUrl ? (
-          <img
-            src={artUrl}
-            alt={name}
-            className="w-full h-full object-cover object-center"
-            draggable={false}
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
-        ) : (
-          <div className="w-full h-full" style={{ background: artGradient }} />
-        )}
-      </div>
+          {/* ── Spell gradient: text area overlay masked by card_text_spell ─── */}
+          {spellGradient && (
+            <div
+              className="absolute inset-0 z-2 pointer-events-none select-none"
+              style={{
+                background: spellGradient,
+                WebkitMaskImage: 'url(/CardComponent/card_text_spell.png)',
+                WebkitMaskSize: '100% 100%',
+                WebkitMaskRepeat: 'no-repeat',
+                maskImage: 'url(/CardComponent/card_text_spell.png)',
+                maskSize: '100% 100%',
+                maskRepeat: 'no-repeat',
+                opacity: 0.6,
+              }}
+            />
+          )}
 
-      {/* ── Layer 3: Art frame source/mask reference (kept under art layer) ───── */}
-      <img src="/CardComponent/card_sprite.png" alt="" aria-hidden className={`${OVERLAY} z-2`} draggable={false} />
+          {/* ── Spell Layer 2: Art mask reference ────────────────────────────── */}
+          <img src="/CardComponent/card_sprite_spell.png" alt="" aria-hidden className={`${OVERLAY} z-3`} draggable={false} />
 
-      {/* ── Layer 4: Shadow overlay (full-card PNG) ───────────────────────────── */}
-      <img src="/CardComponent/card_shadow.png" alt="" aria-hidden className={`${OVERLAY} z-4`} draggable={false} />
+          {/* ── Spell Layer 3: Character art (clipped by spell sprite mask) ───── */}
+          <div
+            className="absolute inset-0 z-3 overflow-hidden"
+            style={{
+              WebkitMaskImage: 'url(/CardComponent/card_sprite_spell.png)',
+              WebkitMaskSize: '100% 100%',
+              WebkitMaskRepeat: 'no-repeat',
+              maskImage: 'url(/CardComponent/card_sprite_spell.png)',
+              maskSize: '100% 100%',
+              maskRepeat: 'no-repeat',
+            }}
+          >
+            {artUrl ? (
+              <img
+                src={artUrl}
+                alt={name}
+                className="w-full h-full object-cover object-center"
+                draggable={false}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            ) : (
+              <div className="w-full h-full" style={{ background: artGradient }} />
+            )}
+          </div>
 
-      {/* ── Layer 5a: SubType banner (full-card PNG, only when subType present) ── */}
-      {hasSubType && (
-        <img src="/CardComponent/card_subtype.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
-      )}
+          {/* ── Spell Layer 4: Shadow overlay ─────────────────────────────────── */}
+          <img src="/CardComponent/card_shadow_spell.png" alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
 
-      {/* ── Layer 5b: Mana badge (full-card PNG) ─────────────────────────────── */}
-      <img src="/CardComponent/card_mana.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
+          {/* ── Spell Layer 5: Mana badge ─────────────────────────────────────── */}
+          <img src="/CardComponent/card_mana.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
+        </>
+      ) : (
+        <>
+          {/* ── Layer 1: Card base frame (full-card overlay) ──────────────────── */}
+          <img src="/CardComponent/card_base.png" alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
 
-      {/* ── Layer 5c: Power badge (full-card PNG, only when power present) ──────── */}
-      {hasPower && (
-        <img src="/CardComponent/card_power.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
+          {/* ── Layer 2: Character art (clipped by frame alpha mask) ───────────── */}
+          <div
+            className="absolute inset-0 z-3 overflow-hidden"
+            style={{
+              WebkitMaskImage: 'url(/CardComponent/card_sprite.png)',
+              WebkitMaskSize: '100% 100%',
+              WebkitMaskRepeat: 'no-repeat',
+              maskImage: 'url(/CardComponent/card_sprite.png)',
+              maskSize: '100% 100%',
+              maskRepeat: 'no-repeat',
+            }}
+          >
+            {artUrl ? (
+              <img
+                src={artUrl}
+                alt={name}
+                className="w-full h-full object-cover object-center"
+                draggable={false}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            ) : (
+              <div className="w-full h-full" style={{ background: artGradient }} />
+            )}
+          </div>
+
+          {/* ── Layer 3: Art mask reference ───────────────────────────────────── */}
+          <img src="/CardComponent/card_sprite.png" alt="" aria-hidden className={`${OVERLAY} z-2`} draggable={false} />
+
+          {/* ── Layer 4: Shadow overlay ───────────────────────────────────────── */}
+          <img src="/CardComponent/card_shadow.png" alt="" aria-hidden className={`${OVERLAY} z-4`} draggable={false} />
+
+          {/* ── Layer 5a: SubType banner (only when subType present) ───────────── */}
+          {hasSubType && (
+            <img src="/CardComponent/card_subtype.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
+          )}
+
+          {/* ── Layer 5b: Mana badge ──────────────────────────────────────────── */}
+          <img src="/CardComponent/card_mana.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
+
+          {/* ── Layer 5c: Power badge (only when power present) ───────────────── */}
+          {hasPower && (
+            <img src="/CardComponent/card_power.png" alt="" aria-hidden className={`${OVERLAY} z-5`} draggable={false} />
+          )}
+        </>
       )}
 
       {/* ── Layer 6: Text overlays (cqw = % of card container width) ─────────── */}
@@ -340,7 +502,7 @@ export default function Card({
       <div
         className="absolute z-6 flex items-center justify-center select-none font-display font-bold text-cq-xl text-text-primary leading-none"
         style={{
-          top: '-2cqw', left: '1cqw',
+          top: '-1cqw', left: '2cqw',
           width: '22cqw', height: '22cqw',
           textShadow: '0 1px 4px rgba(0,0,0,0.9)',
         }}
@@ -353,7 +515,7 @@ export default function Card({
         <div
           className="absolute z-6 flex items-center justify-center select-none font-display font-bold text-cq-xl text-text-primary leading-none"
           style={{
-            top: '-2cqw', right: '1cqw',
+            top: '-1cqw', right: '2cqw',
             width: '22cqw', height: '22cqw',
             textShadow: '0 1px 4px rgba(0,0,0,0.9)',
           }}
@@ -367,7 +529,7 @@ export default function Card({
         <div
           className="absolute z-6 flex items-center justify-center overflow-hidden whitespace-nowrap text-ellipsis uppercase select-none text-cq-sm font-normal tracking-[0.05em] text-[#979382]"
           style={{
-            top: '2.5cqw', left: '22cqw', right: '22cqw',
+            top: '3cqw', left: '22cqw', right: '22cqw',
             height: '8cqw',
             fontFamily: "'UniversCnRg', sans-serif",
           }}
@@ -376,84 +538,57 @@ export default function Card({
         </div>
       )}
 
-      {/* ── Layer 7: Bottom text block ────────────────────────────────────────── */}
-      <div
-        className="absolute z-6 bottom-0 flex flex-col items-center pb-[3%] space-y-[2%]"
-        style={{ left: '6%', right: '6%', gap: '0.5cqw' }}
-      >
-        {/* Card name */}
+      {/* ── Layer 7a: Regular card bottom text block ──────────────────────────── */}
+      {!isSpell && (
         <div
-          className="w-full text-center select-none uppercase font-display font-bold text-cq-lg text-text-primary leading-[1.1]"
-          style={{
-            textShadow: '0 0 8px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9)',
-          }}
+          className="absolute z-6 bottom-0 flex flex-col items-center pb-[3%] space-y-[2%]"
+          style={{ left: '6%', right: '6%', gap: '0.5cqw' }}
         >
-          {name}
-        </div>
-
-        {/* Keyword badges — full layout only */}
-        {layout === 'full' && keywords && keywords.length > 0 && (
-          <div className="flex flex-wrap justify-center" style={{ gap: '3cqw' }}>
-            {keywords.map(kw => (
-              <div
-                key={kw}
-                className="shrink-0 inline-flex items-center h-[10cqw] gap-[1.5cqw] px-[1cqw] cursor-pointer border-solid border-[2cqw] border-transparent"
-                style={{ borderImage: "url('/CardComponent/card_keyword.png') 8 fill / 1.5cqw / 0 stretch" }}
-                onMouseEnter={(e) => { const d = resolveTooltipData(e.currentTarget); if (d) startHover(d.name, d.description, e.clientX, e.clientY); }}
-                onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
-                onMouseLeave={() => cancelHover()}
-                onTouchStart={(e) => { const t = e.changedTouches[0]; const d = resolveTooltipData(e.currentTarget); if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
-                onTouchEnd={cancelLongPress}
-                onTouchMove={cancelLongPress}
-                data-keyword={kw}
-              >
-                <img
-                  src={`/KeywordSprites/${kw}.webp`}
-                  alt={kw}
-                  className="h-[5.5cqw] aspect-square object-contain"
-                  draggable={false}
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-                <span className="font-display font-bold text-cq-sm text-keyword uppercase tracking-[0.06em] whitespace-nowrap leading-none pointer-events-none select-none">
-                  {kw}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Skill text — full layout only */}
-        {layout === 'full' && skill && (
+          {/* Card name */}
           <div
-            className="w-full h-fit text-center font-body text-cq-base text-text-primary leading-[1.25]"
+            className="w-full text-center select-none uppercase font-display font-bold text-cq-lg text-text-primary leading-[1.1]"
             style={{
-              textShadow: '0 1px 4px rgba(0,0,0,0.9)',
-              display: '-webkit-box',
-              // WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
+              textShadow: '0 0 8px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9)',
             }}
-            onMouseOver={(e) => { const el = (e.target as HTMLElement).closest('[data-keyword],[data-vocab]') as HTMLElement | null; const d = el ? resolveTooltipData(el) : null; if (d) startHover(d.name, d.description, e.clientX, e.clientY); else cancelHover(); }}
-            onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
-            onMouseLeave={() => cancelHover()}
-            onTouchStart={(e) => { const t = e.changedTouches[0]; const raw = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null; const el = raw?.closest('[data-keyword],[data-vocab]') as HTMLElement | null ?? raw; const d = el ? resolveTooltipData(el) : null; if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
-            onTouchEnd={cancelLongPress}
-            onTouchMove={cancelLongPress}
-            dangerouslySetInnerHTML={{ __html: formatCardText(skill, balanceValues) }}
-          />
-        )}
+          >
+            {name}
+          </div>
 
-        {/* Level-up separator + text — full layout only */}
-        {layout === 'full' && levelUp && (
-          <>
-            <img
-              src="/CardComponent/card_levelup.png"
-              alt=""
-              aria-hidden
-              className="w-full h-auto object-contain pointer-events-none"
-              draggable={false}
-            />
+          {/* Keyword badges — full layout only */}
+          {layout === 'full' && keywords && keywords.length > 0 && (
+            <div className="flex flex-wrap justify-center" style={{ gap: '3cqw' }}>
+              {keywords.map(kw => (
+                <div
+                  key={kw}
+                  className="shrink-0 inline-flex items-center h-[10cqw] gap-[1.5cqw] px-[1cqw] cursor-pointer border-solid border-[2cqw] border-transparent"
+                  style={{ borderImage: "url('/CardComponent/card_keyword.png') 8 fill / 1.5cqw / 0 stretch" }}
+                  onMouseEnter={(e) => { const d = resolveTooltipData(e.currentTarget); if (d) startHover(d.name, d.description, e.clientX, e.clientY); }}
+                  onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
+                  onMouseLeave={() => cancelHover()}
+                  onTouchStart={(e) => { const t = e.changedTouches[0]; const d = resolveTooltipData(e.currentTarget); if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
+                  onTouchEnd={cancelLongPress}
+                  onTouchMove={cancelLongPress}
+                  data-keyword={kw}
+                >
+                  <img
+                    src={`/KeywordSprites/${kw}.webp`}
+                    alt={kw}
+                    className="h-[5.5cqw] aspect-square object-contain"
+                    draggable={false}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                  <span className="font-display font-bold text-cq-sm text-keyword uppercase tracking-[0.06em] whitespace-nowrap leading-none pointer-events-none select-none">
+                    {kw}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Skill text — full layout only */}
+          {layout === 'full' && skill && (
             <div
-              className="w-full overflow-hidden text-center select-none font-body text-cq-base leading-tight text-[rgb(255,162,100)]"
+              className="w-full h-fit text-center font-body text-cq-base text-text-primary leading-tight"
               style={{
                 textShadow: '0 1px 4px rgba(0,0,0,0.9)',
                 display: '-webkit-box',
@@ -466,35 +601,161 @@ export default function Card({
               onTouchStart={(e) => { const t = e.changedTouches[0]; const raw = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null; const el = raw?.closest('[data-keyword],[data-vocab]') as HTMLElement | null ?? raw; const d = el ? resolveTooltipData(el) : null; if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
               onTouchEnd={cancelLongPress}
               onTouchMove={cancelLongPress}
-              dangerouslySetInnerHTML={{ __html: formatCardText(levelUp, balanceValues) }}
+              dangerouslySetInnerHTML={{ __html: formatCardText(skill, balanceValues) }}
             />
-          </>
-        )}
+          )}
 
-        {/* Region icons — full layout only */}
-        {layout === 'full' && regions.length > 0 && (
-          <div className="flex items-center justify-center" style={{ gap: '1cqw' }}>
-            {regions.map(region => {
-              const sprite = regionSpriteMap[region];
-              return sprite ? (
-                <img
-                  key={region}
-                  src={`/RegionSprites/${sprite}.webp`}
-                  alt={region}
-                  title={region}
-                  className="object-contain select-none opacity-65 mb-[1cqw]"
-                  style={{ width: '16cqw', height: '16cqw' }}
-                  draggable={false}
-                />
-              ) : (
-                <span key={region} className="uppercase select-none whitespace-nowrap font-body text-cq-md text-text-muted tracking-[0.06em]">
-                  {region}
-                </span>
-              );
-            })}
+          {/* Level-up separator + text — full layout only */}
+          {layout === 'full' && levelUp && (
+            <>
+              <img
+                src="/CardComponent/card_levelup.png"
+                alt=""
+                aria-hidden
+                className="w-full h-auto object-contain pointer-events-none"
+                draggable={false}
+              />
+              <div
+                className="w-full overflow-hidden text-center select-none font-body text-cq-base leading-tight text-[rgb(255,162,100)]"
+                style={{
+                  textShadow: '0 1px 4px rgba(0,0,0,0.9)',
+                  display: '-webkit-box',
+                  // WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical',
+                }}
+                onMouseOver={(e) => { const el = (e.target as HTMLElement).closest('[data-keyword],[data-vocab]') as HTMLElement | null; const d = el ? resolveTooltipData(el) : null; if (d) startHover(d.name, d.description, e.clientX, e.clientY); else cancelHover(); }}
+                onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
+                onMouseLeave={() => cancelHover()}
+                onTouchStart={(e) => { const t = e.changedTouches[0]; const raw = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null; const el = raw?.closest('[data-keyword],[data-vocab]') as HTMLElement | null ?? raw; const d = el ? resolveTooltipData(el) : null; if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
+                onTouchEnd={cancelLongPress}
+                onTouchMove={cancelLongPress}
+                dangerouslySetInnerHTML={{ __html: formatCardText(levelUp, balanceValues) }}
+              />
+            </>
+          )}
+
+          {/* Region icons — full layout only */}
+          {layout === 'full' && regions.length > 0 && (
+            <div className="flex items-center justify-center" style={{ gap: '1cqw' }}>
+              {regions.map(region => {
+                const sprite = regionSpriteMap[region];
+                return sprite ? (
+                  <img
+                    key={region}
+                    src={`/RegionSprites/${sprite}.webp`}
+                    alt={region}
+                    title={region}
+                    className="object-contain select-none opacity-65 mb-[1cqw]"
+                    style={{ width: '16cqw', height: '16cqw' }}
+                    draggable={false}
+                  />
+                ) : (
+                  <span key={region} className="uppercase select-none whitespace-nowrap font-body text-cq-md text-text-muted tracking-[0.06em]">
+                    {region}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Layer 7b: Spell card text block (top-aligned, regions pinned bottom) ── */}
+      {isSpell && (
+        <div
+          className="absolute z-6 flex flex-col items-center space-y-[2%]"
+          style={{ top: '59%', bottom: '1%', left: '6%', right: '6%'}}
+        >
+          {/* Card name — single line, auto-shrinks to fit */}
+          <div
+            ref={nameSpellRef}
+            className="w-full text-center select-none uppercase font-display font-bold text-text-primary leading-none"
+            style={{
+              fontSize: '8cqw',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textShadow: '0 0 8px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9)',
+            }}
+          >
+            {name}
           </div>
-        )}
-      </div>
+
+          {/* Keyword badges — full layout only */}
+          {layout === 'full' && keywords && keywords.length > 0 && (
+            <div className="flex flex-wrap justify-center" style={{ gap: '3cqw' }}>
+              {keywords.map(kw => (
+                <div
+                  key={kw}
+                  className="shrink-0 inline-flex items-center h-[10cqw] gap-[1.5cqw] px-[1cqw] cursor-pointer border-solid border-[2cqw] border-transparent"
+                  style={{ borderImage: "url('/CardComponent/card_keyword.png') 8 fill / 1.5cqw / 0 stretch" }}
+                  onMouseEnter={(e) => { const d = resolveTooltipData(e.currentTarget); if (d) startHover(d.name, d.description, e.clientX, e.clientY); }}
+                  onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
+                  onMouseLeave={() => cancelHover()}
+                  onTouchStart={(e) => { const t = e.changedTouches[0]; const d = resolveTooltipData(e.currentTarget); if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
+                  onTouchEnd={cancelLongPress}
+                  onTouchMove={cancelLongPress}
+                  data-keyword={kw}
+                >
+                  <img
+                    src={`/KeywordSprites/${kw}.webp`}
+                    alt={kw}
+                    className="h-[5.5cqw] aspect-square object-contain"
+                    draggable={false}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                  <span className="font-display font-bold text-cq-sm text-keyword uppercase tracking-[0.06em] whitespace-nowrap leading-none pointer-events-none select-none">
+                    {kw}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Skill text — auto-shrinks font to avoid overflowing into regions */}
+          {layout === 'full' && skill ? (
+            <div className="w-full flex-1 min-h-0 overflow-hidden">
+              <div
+                ref={skillSpellRef}
+                className="w-full h-full overflow-hidden text-center font-body text-text-primary leading-tight"
+                style={{ fontSize: '4.5cqw', textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}
+                onMouseOver={(e) => { const el = (e.target as HTMLElement).closest('[data-keyword],[data-vocab]') as HTMLElement | null; const d = el ? resolveTooltipData(el) : null; if (d) startHover(d.name, d.description, e.clientX, e.clientY); else cancelHover(); }}
+                onMouseMove={(e) => setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
+                onMouseLeave={() => cancelHover()}
+                onTouchStart={(e) => { const t = e.changedTouches[0]; const raw = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null; const el = raw?.closest('[data-keyword],[data-vocab]') as HTMLElement | null ?? raw; const d = el ? resolveTooltipData(el) : null; if (d) startLongPress(d.name, d.description, t.clientX, t.clientY); }}
+                onTouchEnd={cancelLongPress}
+                onTouchMove={cancelLongPress}
+                dangerouslySetInnerHTML={{ __html: formatCardText(skill, balanceValues) }}
+              />
+            </div>
+          ) : (
+            <div className="flex-1" />
+          )}
+
+          {/* Region icons — always pinned to bottom */}
+          {layout === 'full' && regions.length > 0 && (
+            <div className="flex items-center justify-center mb-[3cqw]" style={{ gap: '1cqw', marginTop: 'auto' }}>
+              {regions.map(region => {
+                const sprite = regionSpriteMap[region];
+                return sprite ? (
+                  <img
+                    key={region}
+                    src={`/RegionSprites/${sprite}.webp`}
+                    alt={region}
+                    title={region}
+                    className="object-contain select-none opacity-65"
+                    style={{ width: '16cqw', height: '16cqw' }}
+                    draggable={false}
+                  />
+                ) : (
+                  <span key={region} className="uppercase select-none whitespace-nowrap font-body text-cq-md text-text-muted tracking-[0.06em]">
+                    {region}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Tooltip portal (rendered to document.body to escape card overflow/containment) ── */}
       {typeof document !== 'undefined' && tooltip && createPortal(

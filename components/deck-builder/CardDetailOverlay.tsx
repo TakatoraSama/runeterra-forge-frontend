@@ -55,7 +55,7 @@ export default function CardDetailOverlay({ card, relatedCards, onClose }: CardD
           <Card
             name={current.Name}
             cost={current.Cost}
-            power={current.Type !== 'Landmark' ? current.Power : undefined}
+            power={current.Type !== 'Landmark' && current.Type !== 'Spell' ? current.Power : undefined}
             subType={current.SubType || undefined}
             skill={current.Skill || undefined}
             levelUp={current.LevelUp || undefined}
@@ -65,6 +65,7 @@ export default function CardDetailOverlay({ card, relatedCards, onClose }: CardD
             artUrl={toWebSpritePath(current.Sprite)}
             width={400}
             layout="full"
+            type={current.Type}
           />
 
           {/* Dot indicators */}

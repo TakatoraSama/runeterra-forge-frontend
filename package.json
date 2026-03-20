@@ -14,6 +14,7 @@
     "convert-vocabs": "node scripts/convert-db.mjs --only vocabs"
   },
   "dependencies": {
+    "colorthief": "^3.3.1",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/colorthief": "^2.6.1",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

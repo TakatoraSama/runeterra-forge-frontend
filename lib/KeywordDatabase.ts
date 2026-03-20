@@ -56,7 +56,7 @@ export const KEYWORDS: Record<string, KeywordData> = {
     Transferable: true,
     Positive: true,
   },
-  Augmented: {
+  Augment: {
     Description: 'When you play a created card, grant me +1 Power.',
     Sprite: '/KeywordSprites/Augmented.webp',
     Stackable: false,

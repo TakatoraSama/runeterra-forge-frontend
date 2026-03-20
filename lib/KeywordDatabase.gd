@@ -49,7 +49,7 @@ const KEYWORDS = {
 		"Transferable": true,
 		"Positive": true
 	},
-	"Augmented": {
+	"Augment": {
 		"Description": "When you play a created card, grant me +1 Power.",
 		"Sprite": "res://Assets/KeywordSprites/Augmented.webp",
 		"Stackable": false,

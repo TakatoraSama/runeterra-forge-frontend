@@ -425,7 +425,7 @@ const CARDS = {
 		"Cost": 3,
 		"Power": 3,
 		"Keyword": [],
-		"Skill": "{Play}: Discard a ≤2, 3-4, and 5+ cost card to grant me +2 Power for each card discarded.",
+		"Skill": "{Play}: Discard a 2 or less, 3-4, and 5+ cost card to grant me +2 Power for each card discarded.",
 		"LevelUp": "You've discarded {discard_threshold}+ times.",
 		"LevelUpTo": "Rumble2",
 		"AbilityType": "discard_by_cost_bracket",
@@ -443,7 +443,7 @@ const CARDS = {
 		"Cost": 3,
 		"Power": 4,
 		"Keyword": [],
-		"Skill": "When I level up, for each of your discarded cards, create a random card with a cost equal to the discarded card's cost and reduce its cost by 1.",
+		"Skill": "When I level up, for each of your discarded cards, create a random card with a cost equal to the discarded card's cost, reduce its cost by 1 and grant it :Augment: {Augment}.",
 		"LevelUp": "",
 		"LevelUpTo": "Rumble2",
 		"AbilityType": "level_up_create_from_discards",
@@ -583,42 +583,146 @@ const CARDS = {
 		"PreviewTooltip": ["Janna1", "Janna2"]
 	},
 
-	# Champion - Karma line
-	"Karma1": {
-		"Name": "Karma",
-		"Region": ["Ionia"],
+	# Champion - Mordekaiser line
+	"Mordekaiser1": {
+		"Name": "Mordekaiser",
+		"Region": ["Noxus", "Shadow Isles"],
 		"Type": "Champion",
 		"SubType": "",
 		"Collectible": true,
-		"Sprite": "res://Assets/CardSprites/Karma1.webp",
+		"Sprite": "res://Assets/CardSprites/Mordekaiser1.webp",
 		"Level": 1,
 		"Cost": 5,
-		"Power": 5,
-		"Keyword": [],
-		"Skill": "",
-		"LevelUp": "You're {Enlightened}.",
-		"LevelUpTo": "Karma2",
+		"Power": 8,
+		"Keyword": ["Challenger"],
+		"Skill": "{Play}: Kill 2 allies here. [br] When you kill another ally, revive it.",
+		"LevelUp": "{killed_threshold}+ allies have died. Allies with 5+ Power count twice.",
+		"LevelUpTo": "Mordekaiser2",
 		"AbilityType": "",
-		"BalanceValues": {},
-		"PreviewTooltip": ["Karma1", "Karma2"]
+		"BalanceValues": {"killed_threshold": 8},
+		"PreviewTooltip": ["Mordekaiser1", "Mordekaiser2"]
 	},
-	"Karma2": {
-		"Name": "Karma",
-		"Region": ["Ionia"],
+	"Mordekaiser2": {
+		"Name": "Mordekaiser",
+		"Region": ["Noxus", "Shadow Isles"],
 		"Type": "Champion",
 		"SubType": "",
 		"Collectible": false,
-		"Sprite": "res://Assets/CardSprites/Karma2.webp",
+		"Sprite": "res://Assets/CardSprites/Mordekaiser2.webp",
 		"Level": 2,
 		"Cost": 5,
-		"Power": 6,
-		"Keyword": [],
-		"Skill": "{Aura}: Allied {play} effect happens twice.",
+		"Power": 9,
+		"Keyword": ["Challenger"],
+		"Skill": "When you kill another ally, revive it. [br] {Round End}: Kill other units here, remaining only me and the weakest enemy.",
 		"LevelUp": "",
 		"LevelUpTo": null,
 		"AbilityType": "",
+		"BalanceValues": {"revive_buff": 2},
+		"PreviewTooltip": ["Mordekaiser1", "Mordekaiser2"]
+	},
+
+	# Champion - Viktor line
+	"Viktor1": {
+		"Name": "Viktor",
+		"Region": ["Piltover Zaun"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": true,
+		"Sprite": "res://Assets/CardSprites/Viktor1.webp",
+		"Level": 1,
+		"Cost": 2,
+		"Power": 3,
+		"Keyword": ["Augment"],
+		"Skill": "{Play} or {Round Start}: Create a [Hex Core Upgrade] in your hand if you don't have one.",
+		"LevelUp": "You've played {card_threshold}+ created cards.",
+		"LevelUpTo": "Viktor2",
+		"AbilityType": "",
+		"BalanceValues": {"card_threshold": 4},
+		"PreviewTooltip": ["Viktor1", "Viktor2", "HexCoreUpgrade"]
+	},
+	"Viktor2": {
+		"Name": "Viktor",
+		"Region": ["Piltover Zaun"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": false,
+		"Sprite": "res://Assets/CardSprites/Viktor2.webp",
+		"Level": 2,
+		"Cost": 2,
+		"Power": 4,
+		"Keyword": ["Augment"],
+		"Skill": "{Play} or {Round Start}: Create a [Hex Core Upgrade] in your hand if you don't have one. [br] {Aura}: Created cards cost {cost_decrease} less.",
+		"LevelUp": "",
+		"LevelUpTo": "",
+		"AbilityType": "",
+		"BalanceValues": {"cost_decrease": 1},
+		"PreviewTooltip": ["Viktor1", "Viktor2", "HexCoreUpgrade"]
+	},
+	"HexCoreUpgrade": {
+		"Name": "Hex Core Upgrade",
+		"Region": ["Piltover Zaun"],
+		"Type": "Spell",
+		"SubType": "",
+		"Collectible": false,
+		"Sprite": "res://Assets/CardSprites/HexCoreUpgrade.webp",
+		"Cost": 0,
+		"Keyword": ["Slow"],
+		"Skill": "Grant [Viktor] a random keyword.",
+		"AbilityType": "",
 		"BalanceValues": {},
-		"PreviewTooltip": ["Karma1", "Karma2"]
+		"PreviewTooltip": ["Viktor1", "Viktor2", "HexCoreUpgrade"]
+	},
+
+	# Champion - Draven line
+	"Draven1": {
+		"Name": "Draven",
+		"Region": ["Noxus"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": true,
+		"Sprite": "res://Assets/CardSprites/Draven1.webp",
+		"Level": 1,
+		"Cost": 3,
+		"Power": 3,
+		"Keyword": [],
+		"Skill": "{Play} or {Round Start}: Create a [Spinning Axe] in your hand if you don't have one.",
+		"LevelUp": "I've seen you play {axe_threshold}+ [Spinning Axes].",
+		"LevelUpTo": "Draven2",
+		"AbilityType": "",
+		"BalanceValues": {"axe_threshold": 2},
+		"PreviewTooltip": ["Draven1", "Draven2", "SpinningAxe"]
+	},
+	"Draven2": {
+		"Name": "Draven",
+		"Region": ["Noxus"],
+		"Type": "Champion",
+		"SubType": "",
+		"Collectible": false,
+		"Sprite": "res://Assets/CardSprites/Draven2.webp",
+		"Level": 2,
+		"Cost": 3,
+		"Power": 4,
+		"Keyword": [],
+		"Skill": "{Play} or {Round Start}: Create 2 [Spinning Axes] in your hand.",
+		"LevelUp": "",
+		"LevelUpTo": "",
+		"AbilityType": "",
+		"BalanceValues": {},
+		"PreviewTooltip": ["Draven1", "Draven2", "SpinningAxe"]
+	},
+	"SpinningAxe": {
+		"Name": "Spinning Axe",
+		"Region": ["Noxus"],
+		"Type": "Spell",
+		"SubType": "",
+		"Collectible": false,
+		"Sprite": "res://Assets/CardSprites/SpinningAxe.webp",
+		"Cost": 0,
+		"Keyword": ["Fast"],
+		"Skill": "Discard your leftmost card to grant [Draven] +{power_bonus} Power.",
+		"AbilityType": "",
+		"BalanceValues": {"power_bonus": 1},
+		"PreviewTooltip": ["Draven1", "Draven2", "SpinningAxe"]
 	},
 	
 	# Landmarks
@@ -630,7 +734,7 @@ const CARDS = {
 		"Collectible": false,
 		"Sprite": "res://Assets/CardSprites/BuriedSunDisc.webp",
 		"Cost": 0,
-		"Keyword": [],
+		"Keyword": ["Landmark"],
 		"Skill": "Once you have {ascended_threshold}+ level 2 Ascended allies in play, {restore the Sun Disc}.",
 		"LevelUpTo": "RestoredSunDisc",
 		"AbilityType": "transform_landmark",
@@ -645,7 +749,7 @@ const CARDS = {
 		"Collectible": false,
 		"Sprite": "res://Assets/CardSprites/RestoredSunDisc.webp",
 		"Cost": 0,
-		"Keyword": [],
+		"Keyword": ["Landmark"],
 		"Skill": "Draw {draw_count} for each Ascended ally that is not beheld. [br] For the rest of the game, your level 2 Ascended allies are level 3.",
 		"LevelUpTo": null,
 		"AbilityType": "ascend_champions",
@@ -819,6 +923,9 @@ const CARDS = {
 		"BalanceValues": {},
 		"PreviewTooltip": ["TerrorOfTheTides"]
 	},
+
+	# Spells
+
 }
 
 
