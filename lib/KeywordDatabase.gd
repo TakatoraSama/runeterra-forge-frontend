@@ -104,5 +104,21 @@ const KEYWORDS = {
 		"Generatable": false,
 		"Transferable": true,
 		"Positive": true
-	}
+	},
+	"Scout": {
+		"Description": "This unit's {Play}, {Round Start}, and {Round End} effects activate twice.",
+		"Sprite": "res://Assets/KeywordSprites/Scout.webp",
+		"Stackable": false,
+		"Generatable": true,
+		"Transferable": true,
+		"Positive": true
+	},
+	"Ephemeral": {
+		"Description": "This unit dies once it activates its skill.",
+		"Sprite": "res://Assets/KeywordSprites/Ephemeral.webp",
+		"Stackable": false,
+		"Generatable": false,
+		"Transferable": false,
+		"Positive": false
+	},
 }
