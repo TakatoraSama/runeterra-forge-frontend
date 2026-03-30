@@ -59,6 +59,7 @@ const regionSpriteMap: Record<string, string> = {
   'Bandle City':   'BandleCity',
   'Ixtal':         'Ixtal',
   'Void':          'Void',
+  'Runeterra':     'Runeterra',
 };
 
 // Region fallback gradients
@@ -73,6 +74,9 @@ const regionGradients: Record<string, string> = {
   Shurima:        'linear-gradient(160deg, #3a2a10 0%, #201508 100%)',
   Targon:         'linear-gradient(160deg, #1a1a3a 0%, #0a0a20 100%)',
   'Bandle City':  'linear-gradient(160deg, #3a2a10 0%, #1a1208 100%)',
+  'Ixtal':        'linear-gradient(160deg, #1a3a10 0%, #0a2008 100%)',
+  'Void':         'linear-gradient(160deg, #2a0a3a 0%, #15051e 100%)',
+  'Runeterra':    'linear-gradient(160deg, #3a2810 0%, #1e1408 100%)',
 };
 
 // ─── Color helpers for spell card gradient ────────────────────────────────────
@@ -154,10 +158,40 @@ function formatCardText(text: string, balanceValues: Record<string, number> = {}
       if (close !== -1 && close > i + 1) {
         const content = text.slice(i + 1, close);
         if (/^\w+$/.test(content)) {
-          result += `<img src="/KeywordSprites/${content}.webp" alt="${content}" data-keyword="${content}" style="width:1.1em;height:1.1em;vertical-align:-0.2em;display:inline-block;margin-right:0.2em;cursor:pointer" onerror="this.style.display='none'">`;
+          const imgHtml = `<img src="/KeywordSprites/${content}.webp" alt="${content}" data-keyword="${content}" style="width:1.1em;height:1.1em;vertical-align:-0.2em;display:inline-block;margin-right:0.2em;cursor:pointer" onerror="this.style.display='none'">`;
+          // Bug 2: wrap :Keyword:{Vocab} in nowrap so icon and label stay on the same line
+          const nextPos = close + 1;
+          if (nextPos < text.length && text[nextPos] === '{') {
+            const vocabClose = text.indexOf('}', nextPos + 1);
+            if (vocabClose !== -1) {
+              const vocabContent = text.slice(nextPos + 1, vocabClose);
+              const vocabHtml = Object.prototype.hasOwnProperty.call(balanceValues, vocabContent)
+                ? String(balanceValues[vocabContent])
+                : `<span data-vocab="${vocabContent}" style="color:#ffca4b;cursor:pointer">${vocabContent}</span>`;
+              result += `<span style="white-space:nowrap">${imgHtml}${vocabHtml}</span>`;
+              i = vocabClose + 1;
+              continue;
+            }
+          }
+          result += imgHtml;
           i = close + 1;
           continue;
         }
+      }
+    }
+
+    // Bug 1: handle -{ as a combined token — keeps minus and value together, prevents line-break between them
+    if (c === '-' && i + 1 < text.length && text[i + 1] === '{') {
+      const closeBrace = text.indexOf('}', i + 2);
+      if (closeBrace !== -1) {
+        const content = text.slice(i + 2, closeBrace);
+        if (result.endsWith(' ')) result = result.slice(0, -1) + '&nbsp;';
+        const valueHtml = Object.prototype.hasOwnProperty.call(balanceValues, content)
+          ? String(balanceValues[content])
+          : `<span data-vocab="${content}" style="color:#ffca4b;cursor:pointer">${content}</span>`;
+        result += `<span style="white-space:nowrap">-${valueHtml}</span>`;
+        i = closeBrace + 1;
+        continue;
       }
     }
 
@@ -173,6 +207,18 @@ function formatCardText(text: string, balanceValues: Record<string, number> = {}
         i = close + 1;
         continue;
       }
+    }
+
+    // Bug 3: prevent space collapse between adjacent spans in -webkit-box layout
+    if (c === ' ') {
+      const next = text[i + 1];
+      if (result.endsWith('</span>') && (next === '[' || next === '{' || next === ':')) {
+        result += '&nbsp;';
+      } else {
+        result += ' ';
+      }
+      i++;
+      continue;
     }
 
     // Escape HTML entities for safety
@@ -235,6 +281,7 @@ export default function Card({
   type,
 }: CardProps) {
   const isSpell = type === 'Spell';
+  const isLandmark = type === 'Landmark';
   // Only truly dynamic / non-Tailwind values remain here
   const containerStyle: CSSProperties = {
     width: typeof width === 'number' ? `${width}px` : width,
@@ -258,10 +305,29 @@ export default function Card({
   const containerRef = useRef<HTMLDivElement>(null);
   const nameSpellRef = useRef<HTMLDivElement>(null);
   const skillSpellRef = useRef<HTMLDivElement>(null);
+  const nameUnitRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSpell) return;
     const el = nameSpellRef.current;
+    if (!el) return;
+    const adjust = () => {
+      el.style.fontSize = `${(containerRef.current?.clientWidth ?? 200) * 0.08}px`;
+      while (el.scrollWidth > el.clientWidth) {
+        const cur = parseFloat(getComputedStyle(el).fontSize);
+        if (cur <= 8) break;
+        el.style.fontSize = `${cur - 0.5}px`;
+      }
+    };
+    adjust();
+    const ro = new ResizeObserver(adjust);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isSpell, name]);
+
+  useEffect(() => {
+    if (isSpell) return;
+    const el = nameUnitRef.current;
     if (!el) return;
     const adjust = () => {
       el.style.fontSize = `${(containerRef.current?.clientWidth ?? 200) * 0.08}px`;
@@ -448,16 +514,16 @@ export default function Card({
       ) : (
         <>
           {/* ── Layer 1: Card base frame (full-card overlay) ──────────────────── */}
-          <img src="/CardComponent/card_base.png" alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
+          <img src={isLandmark ? "/CardComponent/card_base_landmark.png" : "/CardComponent/card_base.png"} alt="" aria-hidden className={`${OVERLAY} z-1`} draggable={false} />
 
           {/* ── Layer 2: Character art (clipped by frame alpha mask) ───────────── */}
           <div
             className="absolute inset-0 z-3 overflow-hidden"
             style={{
-              WebkitMaskImage: 'url(/CardComponent/card_sprite.png)',
+              WebkitMaskImage: `url(/CardComponent/${isLandmark ? 'card_sprite_landmark' : 'card_sprite'}.png)`,
               WebkitMaskSize: '100% 100%',
               WebkitMaskRepeat: 'no-repeat',
-              maskImage: 'url(/CardComponent/card_sprite.png)',
+              maskImage: `url(/CardComponent/${isLandmark ? 'card_sprite_landmark' : 'card_sprite'}.png)`,
               maskSize: '100% 100%',
               maskRepeat: 'no-repeat',
             }}
@@ -476,10 +542,10 @@ export default function Card({
           </div>
 
           {/* ── Layer 3: Art mask reference ───────────────────────────────────── */}
-          <img src="/CardComponent/card_sprite.png" alt="" aria-hidden className={`${OVERLAY} z-2`} draggable={false} />
+          <img src={isLandmark ? "/CardComponent/card_sprite_landmark.png" : "/CardComponent/card_sprite.png"} alt="" aria-hidden className={`${OVERLAY} z-2`} draggable={false} />
 
           {/* ── Layer 4: Shadow overlay ───────────────────────────────────────── */}
-          <img src="/CardComponent/card_shadow.png" alt="" aria-hidden className={`${OVERLAY} z-4`} draggable={false} />
+          <img src={isLandmark ? "/CardComponent/card_shadow_landmark.png" : "/CardComponent/card_shadow.png"} alt="" aria-hidden className={`${OVERLAY} z-4`} draggable={false} />
 
           {/* ── Layer 5a: SubType banner (only when subType present) ───────────── */}
           {hasSubType && (
@@ -546,8 +612,12 @@ export default function Card({
         >
           {/* Card name */}
           <div
-            className="w-full text-center select-none uppercase font-display font-bold text-cq-lg text-text-primary leading-[1.1]"
+            ref={nameUnitRef}
+            className="w-full text-center select-none uppercase font-display font-bold text-text-primary leading-[1.1]"
             style={{
+              fontSize: '8cqw',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
               textShadow: '0 0 8px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9)',
             }}
           >

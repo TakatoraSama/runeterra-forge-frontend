@@ -4,18 +4,20 @@ import MultiSelectDropdown from './MultiSelectDropdown';
 import { getAllRegions } from '@/lib/CardDatabase';
 
 const regionSpriteMap: Record<string, string> = {
-  'Demacia':      'Demacia',
-  'Noxus':        'Noxus',
-  'Freljord':     'Freljord',
-  'Piltover':     'PiltoverZaun',
-  'Bilgewater':   'Bilgewater',
-  'Ionia':        'Ionia',
-  'Shadow Isles': 'ShadowIsles',
-  'Shurima':      'Shurima',
-  'Targon':       'Targon',
-  'Bandle City':  'BandleCity',
-  'Ixtal':        'Ixtal',
-  'Void':         'Void',
+  'Demacia':       'Demacia',
+  'Noxus':         'Noxus',
+  'Freljord':      'Freljord',
+  'Piltover':      'PiltoverZaun',
+  'Piltover Zaun': 'PiltoverZaun',
+  'Bilgewater':    'Bilgewater',
+  'Ionia':         'Ionia',
+  'Shadow Isles':  'ShadowIsles',
+  'Shurima':       'Shurima',
+  'Targon':        'Targon',
+  'Bandle City':   'BandleCity',
+  'Ixtal':         'Ixtal',
+  'Void':          'Void',
+  'Runeterra':     'Runeterra',
 };
 
 const regionOptions = getAllRegions().map(r => ({
